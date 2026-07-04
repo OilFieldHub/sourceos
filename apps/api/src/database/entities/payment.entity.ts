@@ -8,12 +8,13 @@ import { enumColumnType, timestampType } from '../column-types';
 @Entity({ name: 'payments' })
 export class Payment extends TenantEntity {
   /**
-   * Reference code, e.g. "PAY-0001" — org-scoped, assigned at release
-   * (common/reference-codes.ts). `nullable: true` at the DB level only for
-   * the same zero-downtime add-then-backfill reason as `Rfq.rfqNumber` —
-   * every payment released going forward always gets one.
+   * Reference code, e.g. "PAY-0001" — globally unique (platform-wide filing
+   * code, not a per-tenant sequence — see common/reference-codes.ts).
+   * `nullable: true` at the DB level only for the same zero-downtime
+   * add-then-backfill reason as `Rfq.rfqNumber` — every payment released
+   * going forward always gets one.
    */
-  @Column({ type: 'varchar', length: 20, nullable: true })
+  @Column({ type: 'varchar', length: 20, nullable: true, unique: true })
   paymentNumber!: string;
 
   @Column({ type: 'uuid' })

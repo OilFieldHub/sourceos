@@ -12,7 +12,12 @@ export interface GrnLine {
   photoUrls: string[];
 }
 
-/** `grn.partial` holds the PO lifecycle (advance blocked) until exception.resolved — amendment #4. */
+/**
+ * `grn.partial` holds the PO lifecycle (advance blocked) until
+ * exception.resolved — amendment #4. `grnNumber` is globally unique
+ * (platform-wide filing/reference code, not a per-tenant sequence) — see
+ * common/reference-codes.ts.
+ */
 @Entity({ name: 'grns' })
 export class Grn extends TenantEntity {
   @Column({ type: 'varchar', length: 40, unique: true })

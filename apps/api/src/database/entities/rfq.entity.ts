@@ -30,13 +30,14 @@ export interface EvaluationWeights {
 @Entity({ name: 'rfqs' })
 export class Rfq extends TenantEntity {
   /**
-   * Reference code, e.g. "RFQ-0001" — org-scoped, assigned at creation
-   * (common/reference-codes.ts). `nullable: true` at the DB level only so
-   * this column can be added to a table that may already have rows (a
-   * zero-downtime add-nullable-then-backfill migration, not a design gap) —
-   * every RFQ created going forward always gets one from `RfqsService.create`.
+   * Reference code, e.g. "RFQ-0001" — globally unique (platform-wide filing
+   * code, not a per-tenant sequence — see common/reference-codes.ts).
+   * `nullable: true` at the DB level only so this column can be added to a
+   * table that may already have rows (a zero-downtime add-nullable-then-
+   * backfill migration, not a design gap) — every RFQ created going forward
+   * always gets one from `RfqsService.create`.
    */
-  @Column({ type: 'varchar', length: 20, nullable: true })
+  @Column({ type: 'varchar', length: 20, nullable: true, unique: true })
   rfqNumber!: string;
 
   @Column({ type: 'varchar', length: 255 })

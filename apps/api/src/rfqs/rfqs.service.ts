@@ -41,10 +41,11 @@ export class RfqsService {
       const rfqRepo = manager.getRepository(Rfq);
       const rfqItemRepo = manager.getRepository(RfqItem);
 
+      // Globally unique platform-wide filing code (not per-tenant) — see common/reference-codes.ts.
       const rfqNumber = await generateSequentialNumber(
         'RFQ',
-        () => rfqRepo.count({ where: { organizationId: user.organizationId } }),
-        (candidate) => rfqRepo.findOne({ where: { organizationId: user.organizationId, rfqNumber: candidate } }).then((r) => !!r),
+        () => rfqRepo.count(),
+        (candidate) => rfqRepo.findOne({ where: { rfqNumber: candidate } }).then((r) => !!r),
       );
 
       const created = await rfqRepo.save(

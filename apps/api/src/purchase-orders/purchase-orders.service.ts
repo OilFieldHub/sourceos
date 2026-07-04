@@ -57,11 +57,11 @@ export class PurchaseOrdersService {
 
     const po = await this.dataSource.transaction(async (manager) => {
       const poRepo = manager.getRepository(PurchaseOrder);
+      // Globally unique platform-wide filing code (not per-tenant) — see common/reference-codes.ts.
       const poNumber = await generateSequentialNumber(
         'PO',
-        () => poRepo.count({ where: { organizationId: rfq.organizationId } }),
-        (candidate) =>
-          poRepo.findOne({ where: { organizationId: rfq.organizationId, poNumber: candidate } }).then((r) => !!r),
+        () => poRepo.count(),
+        (candidate) => poRepo.findOne({ where: { poNumber: candidate } }).then((r) => !!r),
       );
 
       const created = await poRepo.save(

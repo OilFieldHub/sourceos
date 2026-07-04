@@ -15,6 +15,8 @@ import { enumColumnType, timestampType } from '../column-types';
  * through the Approvals queue with approver != requester (amendment #6).
  * `disputeStatus` freezes escrow only for the disputed line — the frozen
  * line itself is tracked on the Invoice's three-way-match payload.
+ * `poNumber` is globally unique (platform-wide filing/reference code, not a
+ * per-tenant sequence) — see common/reference-codes.ts.
  */
 @Entity({ name: 'purchase_orders' })
 export class PurchaseOrder extends TenantEntity {

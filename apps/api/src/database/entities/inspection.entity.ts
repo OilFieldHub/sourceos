@@ -15,7 +15,8 @@ export class Inspection extends TenantEntity {
   @Column({ type: 'uuid' })
   grnId!: string;
 
-  @Column({ type: 'varchar', length: 60 })
+  /** Globally unique platform-wide filing code (not per-tenant) — see common/reference-codes.ts. */
+  @Column({ type: 'varchar', length: 60, unique: true })
   reportId!: string;
 
   @Column({ type: 'boolean', default: false })

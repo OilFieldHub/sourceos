@@ -184,13 +184,11 @@ export class PurchaseOrderLifecycleService {
     });
 
     const status = lines.every((l) => l.qtyOk) ? GrnStatus.FULL : GrnStatus.PARTIAL;
+    // Globally unique platform-wide filing code (not per-tenant) — see common/reference-codes.ts.
     const grnNumber = await generateSequentialNumber(
       'GRN',
-      () => this.grnsRepository.count({ where: { organizationId: po.organizationId } }),
-      (candidate) =>
-        this.grnsRepository
-          .findOne({ where: { organizationId: po.organizationId, grnNumber: candidate } })
-          .then((r) => !!r),
+      () => this.grnsRepository.count(),
+      (candidate) => this.grnsRepository.findOne({ where: { grnNumber: candidate } }).then((r) => !!r),
     );
 
     const grn = await this.grnsRepository.save(
@@ -250,15 +248,13 @@ export class PurchaseOrderLifecycleService {
     const result =
       dto.conditionCheck && dto.certsCheck && dto.quantityCheck ? InspectionResult.PASSED : InspectionResult.FAILED;
 
+    // Globally unique platform-wide filing code (not per-tenant) — see common/reference-codes.ts.
     const reportId =
       dto.reportId ??
       (await generateSequentialNumber(
         'INSP',
-        () => this.inspectionsRepository.count({ where: { organizationId: po.organizationId } }),
-        (candidate) =>
-          this.inspectionsRepository
-            .findOne({ where: { organizationId: po.organizationId, reportId: candidate } })
-            .then((r) => !!r),
+        () => this.inspectionsRepository.count(),
+        (candidate) => this.inspectionsRepository.findOne({ where: { reportId: candidate } }).then((r) => !!r),
       ));
 
     const inspection = await this.inspectionsRepository.save(
@@ -406,13 +402,11 @@ export class PurchaseOrderLifecycleService {
     });
     const allMatched = threeWayMatch.every((l) => l.matched);
 
+    // Globally unique platform-wide filing code (not per-tenant) — see common/reference-codes.ts.
     const invoiceNumber = await generateSequentialNumber(
       'INV',
-      () => this.invoicesRepository.count({ where: { organizationId: po.organizationId } }),
-      (candidate) =>
-        this.invoicesRepository
-          .findOne({ where: { organizationId: po.organizationId, invoiceNumber: candidate } })
-          .then((r) => !!r),
+      () => this.invoicesRepository.count(),
+      (candidate) => this.invoicesRepository.findOne({ where: { invoiceNumber: candidate } }).then((r) => !!r),
     );
 
     const invoice = await this.invoicesRepository.save(
@@ -472,13 +466,11 @@ export class PurchaseOrderLifecycleService {
       throw new BadRequestException('No invoice on file for this PO');
     }
 
+    // Globally unique platform-wide filing code (not per-tenant) — see common/reference-codes.ts.
     const paymentNumber = await generateSequentialNumber(
       'PAY',
-      () => this.paymentsRepository.count({ where: { organizationId: po.organizationId } }),
-      (candidate) =>
-        this.paymentsRepository
-          .findOne({ where: { organizationId: po.organizationId, paymentNumber: candidate } })
-          .then((r) => !!r),
+      () => this.paymentsRepository.count(),
+      (candidate) => this.paymentsRepository.findOne({ where: { paymentNumber: candidate } }).then((r) => !!r),
     );
 
     const payment = await this.paymentsRepository.save(

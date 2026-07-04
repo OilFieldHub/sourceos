@@ -12,6 +12,7 @@ export interface ThreeWayMatchLine {
   matched: boolean;
 }
 
+/** `invoiceNumber` is globally unique (platform-wide filing/reference code, not a per-tenant sequence) — see common/reference-codes.ts. */
 @Entity({ name: 'invoices' })
 export class Invoice extends TenantEntity {
   @Column({ type: 'varchar', length: 40, unique: true })

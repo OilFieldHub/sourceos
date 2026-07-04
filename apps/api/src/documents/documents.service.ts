@@ -19,20 +19,19 @@ export class DocumentsService {
   /**
    * Files a document into the archive and assigns its code (e.g.
    * "MTC-PO-0001") — see common/reference-codes.ts for the full scheme.
-   * Every organization gets its own independent sequence per (docType,
-   * entityType) pair, same pattern as PO/GRN/Invoice numbering.
+   * The code is a globally unique platform-wide filing reference (one
+   * sequence per (docType, entityType) pair, shared across every
+   * organization) — not a per-tenant label. Visibility of the filed
+   * document itself is still org-scoped (see findForEntity/findByCode/
+   * archive below); only the code's uniqueness is global.
    */
   async file(user: AuthenticatedUser, dto: FileDocumentDto): Promise<Document> {
     const prefix = filingCodePrefix(dto.documentType, dto.entityType);
 
     const code = await generateSequentialNumber(
       prefix,
-      () =>
-        this.documentsRepository.count({
-          where: { organizationId: user.organizationId, documentType: dto.documentType, entityType: dto.entityType },
-        }),
-      (candidate) =>
-        this.documentsRepository.findOne({ where: { organizationId: user.organizationId, code: candidate } }).then((r) => !!r),
+      () => this.documentsRepository.count({ where: { documentType: dto.documentType, entityType: dto.entityType } }),
+      (candidate) => this.documentsRepository.findOne({ where: { code: candidate } }).then((r) => !!r),
     );
 
     const document = await this.documentsRepository.save(
