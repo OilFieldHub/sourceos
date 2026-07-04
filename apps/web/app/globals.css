@@ -1,0 +1,91 @@
+@import "tailwindcss";
+
+@theme inline {
+  --font-sans: var(--font-inter), Inter, sans-serif;
+  --font-mono: var(--font-jetbrains-mono), "JetBrains Mono", monospace;
+
+  /* Nigerian green + warm off-white brand system (redesign, JUL 2026) */
+  --color-ink: #0d2b1e;
+  --color-muted: #5c6b60;
+
+  --color-brand: #0f7a46;
+  --color-brand-dark: #0a5a34;
+  --color-brand-deep: #073a22;
+
+  --color-mint: #e7f4eb;
+  --color-mint-border: #c3e3ce;
+
+  --color-success: #16a34a;
+  --color-success-dark: #128038;
+
+  --color-gold: #dba526;
+  --color-gold-dark: #b3811a;
+  --color-gold-deep: #8a6420;
+  --color-gold-bg: #fbf3e2;
+  --color-gold-border: #e8d4a0;
+  --color-gold-ink: #3d2c0c;
+
+  --color-red: #b8433a;
+  --color-red-deep: #8a342c;
+  --color-red-bg: #fbedeb;
+  --color-red-border: #efc7c0;
+
+  --color-app: #faf8f3;
+  --color-panel: #ffffff;
+  --color-hairline: #e7e2d5;
+  --color-row: #f5f2ea;
+  --color-chip: #efebdf;
+  --color-sand: #f0ede3;
+  --color-line: #e7e2d5;
+
+  /* aliases kept so existing component/page classes keep resolving */
+  --color-amber: #dba526;
+  --color-amber-deep: #8a6420;
+  --color-amber-bg: #fbf3e2;
+  --color-amber-border: #e8d4a0;
+  --color-safe: #0f7a46;
+  --color-safe-dark: #0a5a34;
+  --color-green-deep: #0a5a34;
+  --color-green-bg: #e7f4eb;
+  --color-green-bg-2: #e7f4eb;
+  --color-band: #0a3d26;
+  --color-band-dark: #071f15;
+}
+
+body {
+  font-family: var(--font-sans);
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+
+::selection {
+  background: var(--color-mint-border);
+}
+
+:focus-visible {
+  outline: 2px solid var(--color-brand);
+  outline-offset: 2px;
+}
+
+@keyframes ticker-scroll {
+  from {
+    transform: translateX(0);
+  }
+  to {
+    transform: translateX(-50%);
+  }
+}
+
+.ticker-track {
+  animation: ticker-scroll 34s linear infinite;
+}
+
+.group\/ticker:hover .ticker-track {
+  animation-play-state: paused;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .ticker-track {
+    animation: none;
+  }
+}

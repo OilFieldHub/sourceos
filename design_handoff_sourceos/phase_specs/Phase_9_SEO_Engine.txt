@@ -1,0 +1,6 @@
+Phase 9 SEO Engine
+SEO ENGINE - Programmatic pages: /suppliers/* /categories/* /rfq-template/* /guide/* /compare/* -
+Every entity must map to indexable page
+
+-- 1 of 1 --
+

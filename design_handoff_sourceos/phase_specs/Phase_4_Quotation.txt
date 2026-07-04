@@ -1,0 +1,6 @@
+Phase 4 Quotation
+QUOTATION MODULE - Supplier quote submission - Line-item pricing - RFQ-linked quotations -
+Storage + retrieval
+
+-- 1 of 1 --
+

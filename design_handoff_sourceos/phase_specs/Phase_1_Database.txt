@@ -1,0 +1,9 @@
+Phase 1 Database
+DATABASE SCHEMA (PostgreSQL / TypeORM or Prisma) - All core entities must exist - Must include:
+Organization, User, Supplier, Requirement, RFQ, RFQItem, Quotation, QuotationItem, Evaluation,
+PurchaseOrder, GRN, Inspection, Invoice, Payment, Document, Event - Every table includes: id
+(UUID), organizationId, createdAt, updatedAt - Strict FK relationships required - Event table is
+append-only source of truth
+
+-- 1 of 1 --
+

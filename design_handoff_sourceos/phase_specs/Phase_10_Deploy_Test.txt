@@ -1,0 +1,6 @@
+Phase 10 Deploy Test
+DEPLOYMENT + TEST HARNESS - Docker compose setup - Seed script: 1 org, 3 suppliers, RFQ →
+quotes → evaluation → PO → GRN → payment - Must run full lifecycle without manual intervention
+
+-- 1 of 1 --
+

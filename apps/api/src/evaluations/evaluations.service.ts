@@ -1,0 +1,158 @@
+import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Repository } from 'typeorm';
+import { AuthenticatedUser } from '../auth/types';
+import { RfqStatus } from '../database/entities/enums';
+import { Evaluation } from '../database/entities/evaluation.entity';
+import { Quotation } from '../database/entities/quotation.entity';
+import { Rfq } from '../database/entities/rfq.entity';
+import { EventsService } from '../events/events.service';
+import {
+  computePriceScore,
+  computeReliabilityScore,
+  computeRiskScore,
+  detectLineAnomalies,
+  round2,
+} from './evaluation-scoring';
+
+@Injectable()
+export class EvaluationsService {
+  constructor(
+    @InjectRepository(Rfq)
+    private readonly rfqsRepository: Repository<Rfq>,
+    @InjectRepository(Quotation)
+    private readonly quotationsRepository: Repository<Quotation>,
+    @InjectRepository(Evaluation)
+    private readonly evaluationsRepository: Repository<Evaluation>,
+    private readonly eventsService: EventsService,
+  ) {}
+
+  async evaluate(user: AuthenticatedUser, rfqId: string): Promise<Evaluation[]> {
+    const rfq = await this.rfqsRepository.findOne({ where: { id: rfqId } });
+    if (!rfq || rfq.organizationId !== user.organizationId) {
+      throw new NotFoundException('RFQ not found');
+    }
+    if (rfq.status !== RfqStatus.OPEN) {
+      throw new BadRequestException('RFQ must be OPEN to run evaluation');
+    }
+    if (!rfq.weightsLocked) {
+      throw new BadRequestException('RFQ has no locked weights — publish it first');
+    }
+
+    const quotations = await this.quotationsRepository.find({
+      where: { rfqId },
+      relations: ['items', 'supplier'],
+    });
+    if (quotations.length === 0) {
+      throw new BadRequestException('No quotes have been submitted for this RFQ');
+    }
+
+    const weights = rfq.weightsLocked;
+    const allLines = quotations.flatMap((q) =>
+      q.items.map((item) => ({
+        quotationId: q.id,
+        rfqItemId: item.rfqItemId,
+        unitPrice: parseFloat(item.unitPrice),
+      })),
+    );
+    const anomaliesByQuotation = detectLineAnomalies(allLines);
+    const bestTotal = Math.min(...quotations.map((q) => parseFloat(q.totalAmount)));
+
+    const scored = quotations.map((q) => {
+      const totalAmount = parseFloat(q.totalAmount);
+      const anomalies = anomaliesByQuotation.get(q.id) ?? [];
+
+      const priceScore = computePriceScore(totalAmount, bestTotal);
+      const reliabilityScore = computeReliabilityScore(q.supplier.onTimeRate);
+      const riskScore = computeRiskScore(q.supplier.riskLevel, anomalies.length);
+      const compositeScore = round2(
+        (weights.price * priceScore + weights.reliability * reliabilityScore + weights.risk * riskScore) / 100,
+      );
+
+      const reasons: string[] = [
+        totalAmount === bestTotal
+          ? `Lowest-priced bid among ${quotations.length} quotes ($${totalAmount.toLocaleString()})`
+          : `Priced $${totalAmount.toLocaleString()}, ${round2(((totalAmount - bestTotal) / bestTotal) * 100)}% above the lowest bid`,
+        q.supplier.onTimeRate === null
+          ? 'Cold-start supplier — no completed-contract history yet, reliability scored neutral'
+          : `On-time delivery rate: ${q.supplier.onTimeRate}%`,
+        q.supplier.riskLevel === null
+          ? 'Cold-start supplier — no risk rating yet, risk scored neutral'
+          : `${q.supplier.riskLevel} platform risk rating`,
+      ];
+
+      let anomalyDetail: string | null = null;
+      if (anomalies.length > 0) {
+        anomalyDetail = anomalies
+          .map(
+            (a) =>
+              `line priced ${Math.abs(round2(a.deviationPct * 100))}% ${a.deviationPct < 0 ? 'below' : 'above'} the $${a.medianUnitPrice.toLocaleString()} median across ${a.quoteCount} quotes for this RFQ line`,
+          )
+          .join('; ');
+        reasons.push(`⚠ Anomalous pricing detected — risk score reduced (${anomalyDetail})`);
+      }
+
+      return {
+        quotation: q,
+        priceScore,
+        reliabilityScore,
+        riskScore,
+        compositeScore,
+        reasons,
+        anomalyFlag: anomalies.length > 0,
+        anomalyDetail,
+      };
+    });
+
+    scored.sort(
+      (a, b) =>
+        b.compositeScore - a.compositeScore || parseFloat(a.quotation.totalAmount) - parseFloat(b.quotation.totalAmount),
+    );
+
+    await this.evaluationsRepository.save(
+      scored.map((s, index) =>
+        this.evaluationsRepository.create({
+          organizationId: rfq.organizationId,
+          rfqId: rfq.id,
+          quotationId: s.quotation.id,
+          supplierId: s.quotation.supplierId,
+          priceScore: s.priceScore.toFixed(2),
+          reliabilityScore: s.reliabilityScore.toFixed(2),
+          riskScore: s.riskScore.toFixed(2),
+          compositeScore: s.compositeScore.toFixed(2),
+          rank: index + 1,
+          weightsUsed: weights,
+          reasons: s.reasons,
+          anomalyFlag: s.anomalyFlag,
+          anomalyDetail: s.anomalyDetail,
+        }),
+      ),
+    );
+
+    rfq.status = RfqStatus.EVALUATION;
+    await this.rfqsRepository.save(rfq);
+
+    await this.eventsService.record('rfq.evaluated', {
+      organizationId: rfq.organizationId,
+      entityType: 'Rfq',
+      entityId: rfq.id,
+      actorId: user.userId,
+      note: `${quotations.length} quote(s) scored and ranked`,
+    });
+
+    return this.evaluationsRepository.find({ where: { rfqId }, order: { rank: 'ASC' } });
+  }
+
+  async listForRfq(user: AuthenticatedUser, rfqId: string): Promise<Evaluation[]> {
+    const rfq = await this.rfqsRepository.findOne({ where: { id: rfqId } });
+    if (!rfq || rfq.organizationId !== user.organizationId) {
+      throw new NotFoundException('RFQ not found');
+    }
+
+    return this.evaluationsRepository.find({
+      where: { rfqId },
+      relations: ['supplier'],
+      order: { rank: 'ASC' },
+    });
+  }
+}

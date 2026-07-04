@@ -1,0 +1,6 @@
+Phase 5 Evaluation PO
+EVALUATION + PURCHASE ORDER - Scoring engine (price, risk, reliability) - Rank suppliers -
+Generate PO from winning quote - PO lifecycle enforced
+
+-- 1 of 1 --
+

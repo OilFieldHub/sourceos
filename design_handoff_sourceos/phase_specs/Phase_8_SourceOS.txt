@@ -1,0 +1,6 @@
+Phase 8 SourceOS
+SOURCEOS INTELLIGENCE - Supplier scoring (0–100) - Price anomaly detection - Risk scoring -
+Explainable outputs required
+
+-- 1 of 1 --
+

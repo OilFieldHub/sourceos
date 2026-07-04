@@ -1,0 +1,6 @@
+Phase 2 Backend Core
+BACKEND CORE (NestJS) - Auth (JWT) - Organization module - Event bus system - Base architecture
+setup - No business logic in controllers
+
+-- 1 of 1 --
+

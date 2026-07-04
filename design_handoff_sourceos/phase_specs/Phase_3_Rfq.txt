@@ -1,0 +1,6 @@
+Phase 3 Rfq
+RFQ MODULE (END-TO-END) - Create RFQ - Publish RFQ - Supplier visibility - Quote submission -
+Persist all events - Must fully function end-to-end
+
+-- 1 of 1 --
+

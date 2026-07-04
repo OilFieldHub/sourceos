@@ -1,0 +1,1136 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet data-dc-atomics>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;600;700;800&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>body{margin:0;background:#F2F1EC;font-family:Archivo,system-ui,sans-serif}
+@media (max-width:760px){
+  .os-ticker{display:none}
+  .os-top{flex-wrap:wrap;gap:10px !important;padding:10px 14px !important}
+  .os-body{grid-template-columns:1fr !important}
+  .os-nav{flex-direction:row !important;overflow-x:auto;border-right:none !important;border-bottom:1px solid #E7E4DB;padding:8px 10px !important;gap:6px !important}
+  .os-nav > div{display:none !important}
+  .os-nav button{border-left:none !important;border-radius:8px !important;white-space:nowrap;width:auto !important;padding:9px 13px !important;flex:none}
+  .os-main{padding:14px !important}
+  .os-main h1{font-size:18px !important}
+  .os-grid{grid-template-columns:1fr !important}
+  .os-grid2{grid-template-columns:1fr 1fr !important}
+  .os-scroll{overflow-x:auto}
+  .os-scroll > *{min-width:600px}
+}</style>
+<template id="__bundler_thumbnail"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><rect width="100" height="100" fill="#123626"/><rect x="30" y="30" width="40" height="40" rx="8" fill="#F5A623"/><text x="50" y="56" font-family="sans-serif" font-size="16" font-weight="800" fill="#123626" text-anchor="middle">OH</text></svg></template>
+</helmet>
+
+<!-- ============ TOP BAR ============ -->
+<div class="os-top" style="display:flex;align-items:center;gap:18px;padding:10px 22px;background:#123626;position:sticky;top:0;z-index:50">
+  <div style="display:flex;align-items:center;gap:9px">
+    <svg width="33" height="25" viewBox="0 0 128 96" fill="none" style="flex:none;display:block">
+      <circle cx="48" cy="48" r="30" stroke="#F5A623" stroke-width="16" pathLength="360" stroke-dasharray="246 24 66 24" transform="rotate(237 48 48)"></circle>
+      <rect x="78" y="40" width="34" height="16" fill="#F5A623"></rect>
+      <rect x="108" y="16" width="16" height="64" fill="#F5A623"></rect>
+    </svg>
+    <div>
+      <div style="font-weight:900;font-size:13.5px;color:#fff;letter-spacing:-.2px;line-height:1.15">OILFIELDHUB</div>
+      <div style="display:flex;align-items:center"><span style="font-size:8.5px;letter-spacing:1.5px;color:rgba(255,255,255,.55);font-weight:700">SOURCE</span><span style="font-size:8.5px;font-weight:800;background:#F5A623;color:#123626;border-radius:3px;padding:0 4px;letter-spacing:1px;margin-left:2px">OS</span></div>
+    </div>
+  </div>
+  <a href="OilfieldHub Homepage.dc.html" style="display:flex;align-items:center;gap:6px;border:1px solid rgba(255,255,255,.25);border-radius:7px;padding:6px 12px;font-size:11.5px;font-weight:700;color:rgba(255,255,255,.85);text-decoration:none;font-family:Archivo">← Home</a>
+  <sc-if value="{{ tickerOn }}" hint-placeholder-val="{{ true }}">
+    <div class="os-ticker" style="font-family:'IBM Plex Mono',monospace;font-size:10.5px;color:rgba(255,255,255,.5);white-space:nowrap;overflow:hidden">JACK-UP W.AFR <span style="color:#00C853">$71.2k ▲</span> · PSV DP2 <span style="color:#FF5252">$9.4k ▼</span> · BARITE $196 —</div>
+  </sc-if>
+  <div style="flex:1"></div>
+  <div style="position:relative">
+    <button onClick="{{ toggleNotif }}" style="display:flex;align-items:center;gap:7px;background:rgba(255,255,255,.1);border:none;border-radius:8px;padding:8px 13px;font-size:11.5px;font-weight:700;color:#fff;cursor:pointer;font-family:Archivo">Alerts<span style="{{ notifBadgeSt }}">{{ notifCount }}</span></button>
+    <sc-if value="{{ notifOpen }}" hint-placeholder-val="{{ false }}">
+      <div style="position:absolute;top:44px;right:0;width:360px;background:#fff;border:1px solid #E7E4DB;border-radius:12px;box-shadow:0 12px 32px rgba(6,36,24,.22);z-index:60;overflow:hidden">
+        <div style="padding:12px 16px;border-bottom:1px solid #E7E4DB;font-weight:700;font-size:13px;color:#123626">Awaiting you</div>
+        <sc-for list="{{ notifItems }}" as="n" hint-placeholder-count="4">
+          <div style="padding:10px 16px;border-bottom:1px solid #F1EFE8;display:flex;flex-direction:column;gap:3px">
+            <div style="display:flex;gap:8px;font-family:'IBM Plex Mono',monospace;font-size:10px"><span style="color:#B45309">{{ n.type }}</span><span style="color:#00A344">{{ n.entity }}</span><span style="color:#9CA3AF;margin-left:auto">{{ n.ts }}</span></div>
+            <div style="font-size:11.5px;color:#374151;line-height:1.45">{{ n.note }}</div>
+          </div>
+        </sc-for>
+        <button onClick="{{ openEventLog }}" style="width:100%;padding:11px;background:#FAF9F5;border:none;font-size:12px;font-weight:700;color:#B45309;cursor:pointer;font-family:Archivo">Open event log →</button>
+      </div>
+    </sc-if>
+  </div>
+  <div style="display:flex;background:rgba(255,255,255,.1);border-radius:8px;padding:3px;gap:2px">
+    <button onClick="{{ toBuyer }}" style="{{ buyerBtnSt }}">Buyer · Sahara E&amp;P</button>
+    <button onClick="{{ toSupplier }}" style="{{ supBtnSt }}">Supplier · Deepwater</button>
+    <button onClick="{{ toAdmin }}" style="{{ adminBtnSt }}">Admin</button>
+  </div>
+  <div style="width:30px;height:30px;border-radius:8px;background:rgba(255,255,255,.15);display:grid;place-items:center;font-size:11px;font-weight:700;color:#fff">{{ avatar }}</div>
+</div>
+
+<div class="os-body" style="display:grid;grid-template-columns:216px 1fr;min-height:calc(100vh - 52px)">
+  <!-- ============ SIDE NAV ============ -->
+  <div class="os-nav" style="background:#fff;border-right:1px solid #E7E4DB;padding:14px 0;display:flex;flex-direction:column;gap:2px">
+    <div style="padding:0 18px 8px;font-family:'IBM Plex Mono',monospace;font-size:9.5px;letter-spacing:1.5px;color:#9CA3AF">{{ navHeading }}</div>
+    <sc-for list="{{ navItems }}" as="n" hint-placeholder-count="6">
+      <button onClick="{{ n.go }}" style="{{ n.st }}">{{ n.label }}<span style="{{ n.badgeSt }}">{{ n.badge }}</span></button>
+    </sc-for>
+    <div style="margin:16px 16px 0;background:#123626;border-radius:10px;padding:13px;display:flex;flex-direction:column;gap:6px">
+      <div style="font-size:11.5px;font-weight:700;color:#fff">Lifecycle demo</div>
+      <div style="font-size:10.5px;color:rgba(255,255,255,.55);line-height:1.5">RFQ → quotes → evaluation → PO → GRN → payment. Every action lands in the Event Log.</div>
+    </div>
+  </div>
+
+  <!-- ============ CONTENT ============ -->
+  <div class="os-main" style="padding:22px 26px;display:flex;flex-direction:column;gap:18px;min-width:0">
+
+    <!-- ======== DASHBOARD ======== -->
+    <sc-if value="{{ isDash }}" hint-placeholder-val="{{ true }}">
+      <div data-screen-label="Buyer dashboard" style="display:flex;flex-direction:column;gap:18px">
+        <div style="display:flex;align-items:baseline;gap:12px">
+          <h1 style="margin:0;font-size:21px;font-weight:800;color:#123626;letter-spacing:-.4px">Procurement overview</h1>
+          <span style="font-family:'IBM Plex Mono',monospace;font-size:11px;color:#9CA3AF">SAHARA ENERGY E&amp;P · FY2026</span>
+        </div>
+        <div class="os-grid2" style="display:grid;grid-template-columns:repeat(4,1fr);gap:14px">
+          <div style="background:#fff;border:1px solid #E7E4DB;border-radius:12px;padding:16px;display:flex;flex-direction:column;gap:4px">
+            <div style="font-family:'IBM Plex Mono',monospace;font-size:9.5px;letter-spacing:1.5px;color:#9CA3AF">OPEN RFQS</div>
+            <div style="font-size:24px;font-weight:800;color:#123626">{{ kpiOpenRfqs }}</div>
+            <div style="font-size:11px;color:#6B7280">{{ kpiRfqNote }}</div>
+          </div>
+          <div style="background:#fff;border:1px solid #E7E4DB;border-radius:12px;padding:16px;display:flex;flex-direction:column;gap:4px">
+            <div style="font-family:'IBM Plex Mono',monospace;font-size:9.5px;letter-spacing:1.5px;color:#9CA3AF">QUOTES AWAITING EVALUATION</div>
+            <div style="font-size:24px;font-weight:800;color:#B45309">{{ kpiQuotes }}</div>
+            <div style="font-size:11px;color:#6B7280">RFQ-2214 · closes 11 JUL</div>
+          </div>
+          <div style="background:#fff;border:1px solid #E7E4DB;border-radius:12px;padding:16px;display:flex;flex-direction:column;gap:4px">
+            <div style="font-family:'IBM Plex Mono',monospace;font-size:9.5px;letter-spacing:1.5px;color:#9CA3AF">ACTIVE POS</div>
+            <div style="font-size:24px;font-weight:800;color:#123626">{{ kpiActivePos }}</div>
+            <div style="font-size:11px;color:#6B7280">{{ kpiPoNote }}</div>
+          </div>
+          <div style="background:#fff;border:1px solid #E7E4DB;border-radius:12px;padding:16px;display:flex;flex-direction:column;gap:4px">
+            <div style="font-family:'IBM Plex Mono',monospace;font-size:9.5px;letter-spacing:1.5px;color:#9CA3AF">COMMITTED SPEND</div>
+            <div style="font-size:24px;font-weight:800;color:#123626">{{ kpiSpend }}</div>
+            <div style="font-size:11px;color:#00A344;font-weight:600">SourceOS saved est. $612k vs. median quotes</div>
+          </div>
+        </div>
+        <div class="os-grid" style="display:grid;grid-template-columns:1.5fr 1fr;gap:14px;align-items:start">
+          <div class="os-scroll" style="background:#fff;border:1px solid #E7E4DB;border-radius:12px;overflow:hidden">
+            <div style="display:flex;padding:13px 16px;border-bottom:1px solid #E7E4DB;align-items:center"><span style="font-weight:700;font-size:13.5px;color:#123626">PO pipeline</span><button onClick="{{ goPos }}" style="margin-left:auto;font-size:11.5px;font-weight:600;color:#B45309;background:none;border:none;cursor:pointer;font-family:Archivo">All POs →</button></div>
+            <sc-for list="{{ pos }}" as="po" hint-placeholder-count="3">
+              <button onClick="{{ po.open }}" style="display:grid;grid-template-columns:1fr 1.6fr 1fr .9fr;gap:8px;padding:11px 16px;font-size:12px;border:none;border-bottom:1px solid #F1EFE8;align-items:center;background:none;width:100%;text-align:left;cursor:pointer;font-family:Archivo">
+                <span style="font-family:'IBM Plex Mono',monospace;color:#123626;font-weight:600">{{ po.id }}</span>
+                <span style="color:#374151">{{ po.title }}</span>
+                <span style="{{ po.stageSt }}">{{ po.stageLabel }}</span>
+                <span style="text-align:right;font-family:'IBM Plex Mono',monospace;color:#123626;font-weight:600">{{ po.value }}</span>
+              </button>
+            </sc-for>
+          </div>
+          <div class="os-scroll" style="background:#fff;border:1px solid #E7E4DB;border-radius:12px;overflow:hidden">
+            <div style="display:flex;padding:13px 16px;border-bottom:1px solid #E7E4DB"><span style="font-weight:700;font-size:13.5px;color:#123626">Latest events</span><button onClick="{{ goEvents }}" style="margin-left:auto;font-size:11.5px;font-weight:600;color:#B45309;background:none;border:none;cursor:pointer;font-family:Archivo">Event log →</button></div>
+            <sc-for list="{{ recentEvents }}" as="e" hint-placeholder-count="4">
+              <div style="padding:9px 16px;border-bottom:1px solid #F1EFE8;display:flex;flex-direction:column;gap:2px">
+                <div style="display:flex;gap:8px;font-family:'IBM Plex Mono',monospace;font-size:10px"><span style="color:#B45309">{{ e.type }}</span><span style="color:#9CA3AF;margin-left:auto">{{ e.ts }}</span></div>
+                <div style="font-size:11.5px;color:#374151">{{ e.note }}</div>
+              </div>
+            </sc-for>
+          </div>
+        </div>
+      </div>
+    </sc-if>
+
+    <!-- ======== APPROVALS ======== -->
+    <sc-if value="{{ isApprovals }}" hint-placeholder-val="{{ false }}">
+      <div data-screen-label="Approvals" style="display:flex;flex-direction:column;gap:16px">
+        <div style="display:flex;align-items:baseline;gap:12px">
+          <h1 style="margin:0;font-size:21px;font-weight:800;color:#123626;letter-spacing:-.4px">Approvals</h1>
+          <span style="font-family:'IBM Plex Mono',monospace;font-size:11px;color:#9CA3AF">A. BELLO, FINANCE DIRECTOR · REQUESTER ≠ APPROVER · THRESHOLD &gt; $250K</span>
+        </div>
+        <sc-if value="{{ hasApprovals }}" hint-placeholder-val="{{ true }}">
+          <div style="display:flex;flex-direction:column;gap:12px;max-width:680px">
+            <sc-for list="{{ approvalRows }}" as="a" hint-placeholder-count="2">
+              <div style="background:#fff;border:1.5px solid #F5A623;border-radius:14px;padding:18px;display:flex;flex-direction:column;gap:10px;box-shadow:0 4px 14px rgba(245,166,35,.15)">
+                <div style="font-family:'IBM Plex Mono',monospace;font-size:9.5px;letter-spacing:1px;color:#B45309;font-weight:600">{{ a.kicker }}</div>
+                <div style="font-weight:800;font-size:15.5px;color:#123626;line-height:1.3;letter-spacing:-.2px">{{ a.title }}</div>
+                <div style="font-size:12px;color:#6B7280;line-height:1.55">{{ a.why }}</div>
+                <div style="display:flex;gap:8px;margin-top:2px">
+                  <button onClick="{{ a.ok }}" style="flex:1;background:#00C853;border:none;color:#fff;font-weight:800;font-size:12.5px;padding:11px;border-radius:9px;cursor:pointer;font-family:Archivo">{{ a.okLabel }}</button>
+                  <button onClick="{{ a.altGo }}" style="flex:1;background:#fff;border:1.5px solid #D1D5DB;color:#374151;font-weight:700;font-size:12.5px;padding:10px;border-radius:9px;cursor:pointer;font-family:Archivo">{{ a.alt }}</button>
+                </div>
+              </div>
+            </sc-for>
+          </div>
+        </sc-if>
+        <sc-if value="{{ noApprovals }}" hint-placeholder-val="{{ false }}">
+          <div style="background:#fff;border:1px dashed #D1D5DB;border-radius:12px;padding:28px 24px;text-align:center;font-size:12.5px;color:#6B7280;max-width:680px">No approvals pending. Award decisions and escrow releases land here when they need your sign-off.</div>
+        </sc-if>
+        <sc-if value="{{ hasDecided }}" hint-placeholder-val="{{ false }}">
+          <div style="background:#fff;border:1px solid #E7E4DB;border-radius:12px;overflow:hidden;max-width:680px">
+            <div style="padding:13px 16px;border-bottom:1px solid #E7E4DB;font-weight:700;font-size:13.5px;color:#123626">Decided</div>
+            <sc-for list="{{ apDecided }}" as="d" hint-placeholder-count="1">
+              <div style="display:flex;gap:10px;padding:12px 16px;border-bottom:1px solid #F1EFE8;align-items:flex-start">
+                <span style="width:22px;height:22px;border-radius:6px;background:#00C853;color:#fff;display:grid;place-items:center;font-size:11px;flex:none">✓</span>
+                <div style="flex:1;display:flex;flex-direction:column;gap:2px">
+                  <div style="display:flex;gap:8px;font-family:'IBM Plex Mono',monospace;font-size:9.5px"><span style="color:#B45309;font-weight:600">{{ d.kicker }}</span><span style="color:#9CA3AF;margin-left:auto">{{ d.ts }}</span></div>
+                  <div style="font-size:12px;color:#374151">{{ d.note }}</div>
+                </div>
+              </div>
+            </sc-for>
+          </div>
+        </sc-if>
+        <div style="font-size:11px;color:#9CA3AF;max-width:680px">Every decision appends approval.granted to the event log with the approver's identity. In production, decisions are confirmed biometrically in the mobile app (see exploration 7c).</div>
+      </div>
+    </sc-if>
+
+    <!-- ======== RFQ LIST ======== -->
+    <sc-if value="{{ isRfqs }}" hint-placeholder-val="{{ false }}">
+      <div data-screen-label="RFQ list" style="display:flex;flex-direction:column;gap:16px">
+        <div style="display:flex;align-items:center;gap:12px">
+          <h1 style="margin:0;font-size:21px;font-weight:800;color:#123626;letter-spacing:-.4px">Requests for quotation</h1>
+          <button onClick="{{ goCreate }}" style="margin-left:auto;background:#F5A623;border:none;color:#123626;font-weight:700;font-size:12.5px;padding:9px 16px;border-radius:8px;cursor:pointer;font-family:Archivo">+ New RFQ</button>
+        </div>
+        <div class="os-scroll" style="background:#fff;border:1px solid #E7E4DB;border-radius:12px;overflow:hidden">
+          <div style="display:grid;grid-template-columns:.9fr 2fr .9fr .8fr .8fr .9fr;padding:9px 18px;font-family:'IBM Plex Mono',monospace;font-size:9.5px;letter-spacing:1px;color:#9CA3AF;border-bottom:1px solid #E7E4DB"><span>RFQ</span><span>TITLE</span><span>STATUS</span><span>ITEMS</span><span>QUOTES</span><span>CLOSES</span></div>
+          <sc-for list="{{ rfqList }}" as="r" hint-placeholder-count="2">
+            <button onClick="{{ r.open }}" style="display:grid;grid-template-columns:.9fr 2fr .9fr .8fr .8fr .9fr;padding:13px 18px;font-size:12.5px;border:none;border-bottom:1px solid #F1EFE8;align-items:center;background:none;width:100%;text-align:left;cursor:pointer;font-family:Archivo">
+              <span style="font-family:'IBM Plex Mono',monospace;color:#123626;font-weight:600">{{ r.id }}</span>
+              <span style="color:#123626;font-weight:600">{{ r.title }}</span>
+              <span style="{{ r.statusSt }}">{{ r.status }}</span>
+              <span style="font-family:'IBM Plex Mono',monospace;color:#6B7280">{{ r.items }}</span>
+              <span style="font-family:'IBM Plex Mono',monospace;color:#123626;font-weight:600">{{ r.quotes }}</span>
+              <span style="font-family:'IBM Plex Mono',monospace;color:#6B7280">{{ r.closes }}</span>
+            </button>
+          </sc-for>
+        </div>
+      </div>
+    </sc-if>
+
+    <!-- ======== RFQ CREATE ======== -->
+    <sc-if value="{{ isCreate }}" hint-placeholder-val="{{ false }}">
+      <div data-screen-label="RFQ creation" style="display:flex;flex-direction:column;gap:16px;max-width:820px">
+        <div style="display:flex;align-items:center;gap:12px">
+          <button onClick="{{ goRfqs }}" style="border:1px solid #D1D5DB;background:#fff;border-radius:7px;padding:6px 12px;font-size:12px;color:#374151;cursor:pointer;font-family:Archivo;font-weight:600">← RFQs</button>
+          <h1 style="margin:0;font-size:19px;font-weight:800;color:#123626;letter-spacing:-.4px">New RFQ · {{ nextRfqId }}</h1>
+        </div>
+        <div style="background:#fff;border:1px solid #E7E4DB;border-radius:12px;padding:20px;display:flex;flex-direction:column;gap:18px">
+          <div class="os-grid" style="display:grid;grid-template-columns:2fr 1fr;gap:12px">
+            <div style="display:flex;flex-direction:column;gap:6px">
+              <label style="font-size:11.5px;font-weight:700;color:#374151">Title *</label>
+              <input value="{{ cTitle }}" onChange="{{ onCTitle }}" placeholder="e.g. AHTS charter — Escravos support" style="border:1.5px solid #D1D5DB;border-radius:8px;padding:10px 12px;font-size:13.5px;font-family:Archivo;color:#123626">
+            </div>
+            <div style="display:flex;flex-direction:column;gap:6px">
+              <label style="font-size:11.5px;font-weight:700;color:#374151">Closes</label>
+              <input value="{{ cCloses }}" onChange="{{ onCCloses }}" style="border:1.5px solid #D1D5DB;border-radius:8px;padding:10px 12px;font-size:13.5px;font-family:'IBM Plex Mono',monospace;color:#123626">
+            </div>
+          </div>
+          <div style="display:flex;flex-direction:column;gap:8px">
+            <div style="display:flex;align-items:baseline;gap:10px">
+              <label style="font-size:11.5px;font-weight:700;color:#374151">Line items *</label>
+              <span style="font-family:'IBM Plex Mono',monospace;font-size:9.5px;letter-spacing:1px;color:#9CA3AF">DESCRIPTION · QTY / UNIT</span>
+            </div>
+            <sc-for list="{{ cRows }}" as="row" hint-placeholder-count="2">
+              <div style="display:flex;gap:10px;align-items:center">
+                <input value="{{ row.name }}" onChange="{{ row.onName }}" placeholder="Item description" style="flex:1;border:1.5px solid #D1D5DB;border-radius:8px;padding:9px 12px;font-size:13px;font-family:Archivo;color:#123626">
+                <input value="{{ row.qty }}" onChange="{{ row.onQty }}" placeholder="qty / unit" style="width:140px;border:1.5px solid #D1D5DB;border-radius:8px;padding:9px 12px;font-size:13px;font-family:'IBM Plex Mono',monospace;color:#123626">
+                <button onClick="{{ row.remove }}" style="border:1px solid #E7E4DB;background:#fff;border-radius:7px;padding:8px 11px;font-size:12px;color:#9CA3AF;cursor:pointer;font-family:Archivo">✕</button>
+              </div>
+            </sc-for>
+            <button onClick="{{ addItem }}" style="border:1.5px dashed #D1D5DB;background:none;border-radius:8px;padding:9px;font-size:12.5px;color:#6B7280;cursor:pointer;font-family:Archivo;font-weight:600;width:fit-content;padding-left:16px;padding-right:16px">+ Add line item</button>
+          </div>
+          <div style="display:flex;flex-direction:column;gap:8px">
+            <label style="font-size:11.5px;font-weight:700;color:#374151">Invite suppliers <span style="font-family:'IBM Plex Mono',monospace;font-size:9.5px;color:#9CA3AF;font-weight:400">· SOURCEOS MATCHES, BEST SCORE FIRST</span></label>
+            <div style="display:flex;gap:8px;flex-wrap:wrap">
+              <sc-for list="{{ cSups }}" as="s" hint-placeholder-count="3">
+                <button onClick="{{ s.toggle }}" style="{{ s.st }}">{{ s.label }}</button>
+              </sc-for>
+            </div>
+          </div>
+          <div style="display:flex;gap:12px;align-items:center;border-top:1px solid #F1EFE8;padding-top:16px">
+            <span style="font-size:12px;color:#6B7280;flex:1">{{ publishNote }}</span>
+            <button onClick="{{ publishRfq }}" style="{{ publishSt }}">Publish RFQ → notify suppliers</button>
+          </div>
+        </div>
+      </div>
+    </sc-if>
+
+    <!-- ======== RFQ DETAIL ======== -->
+    <sc-if value="{{ isRfqDetail }}" hint-placeholder-val="{{ false }}">
+      <div data-screen-label="RFQ detail — evaluation" style="display:flex;flex-direction:column;gap:16px">
+        <div style="display:flex;align-items:center;gap:12px">
+          <button onClick="{{ goRfqs }}" style="border:1px solid #D1D5DB;background:#fff;border-radius:7px;padding:6px 12px;font-size:12px;color:#374151;cursor:pointer;font-family:Archivo;font-weight:600">← RFQs</button>
+          <h1 style="margin:0;font-size:19px;font-weight:800;color:#123626;letter-spacing:-.4px">RFQ-2214 · Jack-up drilling campaign — OML 120</h1>
+          <span style="{{ rfq2214StatusSt }}">{{ rfq2214Status }}</span>
+        </div>
+        <!-- comparison -->
+        <div class="os-scroll" style="background:#fff;border:1px solid #E7E4DB;border-radius:12px;overflow:hidden">
+          <div style="padding:13px 18px;border-bottom:1px solid #E7E4DB;font-weight:700;font-size:13.5px;color:#123626">Quote comparison — 3 line items · 3 suppliers</div>
+          <div style="display:grid;grid-template-columns:1.4fr 1fr 1fr 1fr;padding:9px 18px;font-family:'IBM Plex Mono',monospace;font-size:9.5px;letter-spacing:1px;color:#9CA3AF;border-bottom:1px solid #E7E4DB"><span>LINE ITEM</span><span>DEEPWATER ASSETS</span><span>GULFTECH FAB.</span><span>BONNY MARINE</span></div>
+          <sc-for list="{{ compareRows }}" as="row" hint-placeholder-count="4">
+            <div style="display:grid;grid-template-columns:1.4fr 1fr 1fr 1fr;padding:11px 18px;font-size:12.5px;border-bottom:1px solid #F1EFE8;align-items:center">
+              <span style="color:#374151;font-weight:600">{{ row.item }}</span>
+              <span style="font-family:'IBM Plex Mono',monospace;color:#123626;font-weight:600">{{ row.dw }}</span>
+              <span style="font-family:'IBM Plex Mono',monospace;color:#123626;font-weight:600">{{ row.gt }}</span>
+              <span style="{{ row.bmSt }}">{{ row.bm }}</span>
+            </div>
+          </sc-for>
+        </div>
+        <!-- evaluation -->
+        <div style="display:flex;align-items:baseline;gap:10px"><h2 style="margin:0;font-size:15px;font-weight:800;color:#123626">SourceOS evaluation</h2><span style="font-family:'IBM Plex Mono',monospace;font-size:10.5px;color:#9CA3AF">WEIGHTS LOCKED AT PUBLISH · CATEGORY PRESET: RIG CHARTER — PRICE 30 · RELIABILITY 30 · RISK 40</span></div>
+        <div class="os-grid" style="display:grid;grid-template-columns:repeat(3,1fr);gap:14px;align-items:start">
+          <sc-for list="{{ evalCards }}" as="c" hint-placeholder-count="3">
+            <div style="{{ c.cardSt }}">
+              <div style="display:flex;align-items:center;gap:10px">
+                <span style="{{ c.rankSt }}">{{ c.rankLabel }}</span>
+                <span style="font-weight:700;font-size:13.5px;color:#123626">{{ c.name }}</span>
+                <span style="margin-left:auto;font-family:'IBM Plex Mono',monospace;font-size:19px;font-weight:600;color:#123626">{{ c.score }}</span>
+              </div>
+              <div style="display:flex;flex-direction:column;gap:6px;font-size:11px;color:#6B7280">
+                <div style="display:flex;align-items:center;gap:8px"><span style="width:72px">Price</span><span style="flex:1;height:5px;background:#F1EFE8;border-radius:99px;overflow:hidden"><span style="{{ c.priceBar }}"></span></span><span style="font-family:'IBM Plex Mono',monospace;color:#123626">{{ c.priceS }}</span></div>
+                <div style="display:flex;align-items:center;gap:8px"><span style="width:72px">Reliability</span><span style="flex:1;height:5px;background:#F1EFE8;border-radius:99px;overflow:hidden"><span style="{{ c.relBar }}"></span></span><span style="font-family:'IBM Plex Mono',monospace;color:#123626">{{ c.relS }}</span></div>
+                <div style="display:flex;align-items:center;gap:8px"><span style="width:72px">Risk</span><span style="flex:1;height:5px;background:#F1EFE8;border-radius:99px;overflow:hidden"><span style="{{ c.riskBar }}"></span></span><span style="font-family:'IBM Plex Mono',monospace;color:#123626">{{ c.riskS }}</span></div>
+              </div>
+              <div style="display:flex;flex-direction:column;gap:4px;border-top:1px solid #F1EFE8;padding-top:9px">
+                <sc-for list="{{ c.reasons }}" as="rr" hint-placeholder-count="2">
+                  <div style="font-size:11px;color:#374151;line-height:1.45">· {{ rr }}</div>
+                </sc-for>
+              </div>
+              <sc-if value="{{ c.anomaly }}" hint-placeholder-val="{{ false }}">
+                <div style="background:#FDECEC;border:1px solid #F1B5B5;border-radius:8px;padding:8px 10px;font-size:11px;color:#8E2323;line-height:1.45">⚠ {{ c.anomaly }}</div>
+              </sc-if>
+              <sc-if value="{{ c.awardable }}" hint-placeholder-val="{{ false }}">
+                <button onClick="{{ awardDeepwater }}" style="background:#F5A623;border:none;color:#123626;font-weight:800;font-size:12.5px;padding:10px;border-radius:8px;cursor:pointer;font-family:Archivo">Request award approval → ($7.60M &gt; $250k threshold)</button>
+              </sc-if>
+              <sc-if value="{{ c.requested }}" hint-placeholder-val="{{ false }}">
+                <div style="background:#FFF7E8;border:1px solid #F5D9A0;border-radius:8px;padding:9px;font-size:11.5px;color:#B45309;font-weight:700;text-align:center">⏳ Awaiting approval — routed to A. Bello, Finance Director</div>
+              </sc-if>
+              <sc-if value="{{ c.awarded }}" hint-placeholder-val="{{ false }}">
+                <div style="background:#E8F8EE;border:1px solid #9FDDB6;border-radius:8px;padding:9px;font-size:12px;color:#00692B;font-weight:700;text-align:center">✓ Awarded — {{ newPoId }} generated</div>
+              </sc-if>
+            </div>
+          </sc-for>
+        </div>
+      </div>
+    </sc-if>
+
+    <!-- ======== PO LIST ======== -->
+    <sc-if value="{{ isPos }}" hint-placeholder-val="{{ false }}">
+      <div data-screen-label="PO list" style="display:flex;flex-direction:column;gap:16px">
+        <h1 style="margin:0;font-size:21px;font-weight:800;color:#123626;letter-spacing:-.4px">Purchase orders</h1>
+        <div class="os-scroll" style="background:#fff;border:1px solid #E7E4DB;border-radius:12px;overflow:hidden">
+          <div style="display:grid;grid-template-columns:.9fr 1.8fr 1.3fr 1fr .9fr;padding:9px 18px;font-family:'IBM Plex Mono',monospace;font-size:9.5px;letter-spacing:1px;color:#9CA3AF;border-bottom:1px solid #E7E4DB"><span>PO</span><span>TITLE</span><span>SUPPLIER</span><span>STAGE</span><span>VALUE</span></div>
+          <sc-for list="{{ pos }}" as="po" hint-placeholder-count="3">
+            <button onClick="{{ po.open }}" style="display:grid;grid-template-columns:.9fr 1.8fr 1.3fr 1fr .9fr;padding:13px 18px;font-size:12.5px;border:none;border-bottom:1px solid #F1EFE8;align-items:center;background:none;width:100%;text-align:left;cursor:pointer;font-family:Archivo">
+              <span style="font-family:'IBM Plex Mono',monospace;color:#123626;font-weight:600">{{ po.id }}</span>
+              <span style="color:#123626;font-weight:600">{{ po.title }}</span>
+              <span style="color:#6B7280">{{ po.sup }}</span>
+              <span style="{{ po.stageSt }}">{{ po.stageLabel }}</span>
+              <span style="text-align:right;font-family:'IBM Plex Mono',monospace;color:#123626;font-weight:600">{{ po.value }}</span>
+            </button>
+          </sc-for>
+        </div>
+      </div>
+    </sc-if>
+
+    <!-- ======== PO DETAIL ======== -->
+    <sc-if value="{{ isPoDetail }}" hint-placeholder-val="{{ false }}">
+      <div data-screen-label="PO detail — lifecycle" style="display:flex;flex-direction:column;gap:16px">
+        <div style="display:flex;align-items:center;gap:12px">
+          <button onClick="{{ goPos }}" style="border:1px solid #D1D5DB;background:#fff;border-radius:7px;padding:6px 12px;font-size:12px;color:#374151;cursor:pointer;font-family:Archivo;font-weight:600">← POs</button>
+          <h1 style="margin:0;font-size:19px;font-weight:800;color:#123626;letter-spacing:-.4px">{{ poDetId }} · {{ poDetTitle }}</h1>
+          <span style="margin-left:auto;font-family:'IBM Plex Mono',monospace;font-size:12px;color:#123626;font-weight:600">{{ poDetValue }}</span>
+        </div>
+        <div style="background:#fff;border:1px solid #E7E4DB;border-radius:12px;padding:20px;display:flex;flex-direction:column;gap:16px">
+          <div style="display:flex;gap:0">
+            <sc-for list="{{ poStages }}" as="s" hint-placeholder-count="6">
+              <div style="flex:1;display:flex;flex-direction:column;gap:7px;align-items:center">
+                <div style="display:flex;align-items:center;width:100%">
+                  <span style="{{ s.lineL }}"></span>
+                  <span style="{{ s.dot }}">{{ s.mark }}</span>
+                  <span style="{{ s.lineR }}"></span>
+                </div>
+                <span style="{{ s.lblSt }}">{{ s.label }}</span>
+              </div>
+            </sc-for>
+          </div>
+          <div style="display:flex;gap:10px;align-items:center;background:#FAF9F5;border-radius:9px;padding:11px 14px">
+            <span style="font-size:12px;color:#374151;flex:1">{{ poStageNote }}</span>
+            <sc-if value="{{ poCanFail }}" hint-placeholder-val="{{ false }}">
+              <button onClick="{{ failStage }}" style="background:#fff;border:1px solid #F1B5B5;color:#8E2323;font-weight:700;font-size:12px;padding:8px 14px;border-radius:7px;cursor:pointer;font-family:Archivo">{{ failLabel }}</button>
+            </sc-if>
+            <sc-if value="{{ poCanAdvance }}" hint-placeholder-val="{{ false }}">
+              <button onClick="{{ advancePo }}" style="background:#123626;border:none;color:#fff;font-weight:700;font-size:12px;padding:9px 16px;border-radius:7px;cursor:pointer;font-family:Archivo">{{ advanceLabel }}</button>
+            </sc-if>
+          </div>
+          <sc-if value="{{ poHasException }}" hint-placeholder-val="{{ false }}">
+            <div style="display:flex;gap:10px;align-items:center;font-size:11.5px;color:#8E2323;background:#FDECEC;border:1px solid #F1B5B5;border-radius:9px;padding:10px 14px">
+              <span style="flex:1">⚠ {{ poExceptionText }}</span>
+              <button onClick="{{ resolveException }}" style="background:#8E2323;border:none;color:#fff;font-weight:700;font-size:11.5px;padding:8px 14px;border-radius:7px;cursor:pointer;font-family:Archivo;white-space:nowrap">Resolve exception → resume (demo)</button>
+            </div>
+          </sc-if>
+          <div style="display:flex;gap:10px;align-items:center;font-size:11.5px;color:#374151;background:#FFF7E8;border:1px solid #F5D9A0;border-radius:9px;padding:10px 14px">{{ escrowNote }}</div>
+          <sc-if value="{{ poDisputed }}" hint-placeholder-val="{{ false }}">
+            <div style="display:flex;gap:10px;align-items:center;font-size:11.5px;color:#8E2323;background:#FDECEC;border:1px solid #F1B5B5;border-radius:9px;padding:10px 14px">⚠ Dispute {{ poDisputeId }} open on this PO — {{ poDisputeStage }}. Escrow frozen for the disputed line only; undisputed lines release on schedule.</div>
+          </sc-if>
+          <sc-if value="{{ canDispute }}" hint-placeholder-val="{{ false }}">
+            <button onClick="{{ raiseDispute }}" style="border:1px solid #F1B5B5;background:#fff;color:#8E2323;font-weight:700;font-size:12px;padding:9px 16px;border-radius:8px;cursor:pointer;font-family:Archivo;width:fit-content">⚠ Raise dispute on this PO</button>
+          </sc-if>
+        </div>
+        <div class="os-scroll" style="background:#fff;border:1px solid #E7E4DB;border-radius:12px;overflow:hidden">
+          <div style="padding:12px 18px;border-bottom:1px solid #E7E4DB;font-weight:700;font-size:13px;color:#123626">Supplier · {{ poDetSup }}</div>
+          <sc-for list="{{ poDetItems }}" as="it" hint-placeholder-count="3">
+            <div style="display:flex;justify-content:space-between;padding:10px 18px;font-size:12.5px;border-bottom:1px solid #F1EFE8"><span style="color:#374151">{{ it.name }}</span><span style="font-family:'IBM Plex Mono',monospace;color:#123626;font-weight:600">{{ it.amt }}</span></div>
+          </sc-for>
+        </div>
+
+        <!-- GRN -->
+        <sc-if value="{{ hasGrn }}" hint-placeholder-val="{{ false }}">
+          <div class="os-scroll" style="background:#fff;border:1px solid #E7E4DB;border-radius:12px;overflow:hidden">
+            <div style="display:flex;align-items:center;gap:10px;padding:12px 18px;border-bottom:1px solid #E7E4DB">
+              <span style="font-weight:700;font-size:13px;color:#123626">Goods receipt note · {{ grnId }}</span>
+              <span style="font-family:'IBM Plex Mono',monospace;font-size:10px;color:#9CA3AF">{{ grnMeta }}</span>
+              <span style="margin-left:auto;background:#E8F8EE;color:#00692B;font-size:10.5px;font-weight:700;padding:3px 10px;border-radius:99px">✓ RECEIVED IN FULL</span>
+            </div>
+            <sc-for list="{{ poDetItems }}" as="it" hint-placeholder-count="2">
+              <div style="display:flex;gap:12px;padding:9px 18px;font-size:12px;border-bottom:1px solid #F1EFE8;align-items:center">
+                <span style="color:#374151;flex:1">{{ it.name }}</span>
+                <span style="font-family:'IBM Plex Mono',monospace;color:#00692B;font-weight:600">QTY OK</span>
+                <span style="font-family:'IBM Plex Mono',monospace;color:#9CA3AF;font-size:10px">PHOTOS (4) ↓</span>
+              </div>
+            </sc-for>
+          </div>
+        </sc-if>
+
+        <!-- INSPECTION -->
+        <sc-if value="{{ hasInsp }}" hint-placeholder-val="{{ false }}">
+          <div class="os-scroll" style="background:#fff;border:1px solid #E7E4DB;border-radius:12px;overflow:hidden">
+            <div style="display:flex;align-items:center;gap:10px;padding:12px 18px;border-bottom:1px solid #E7E4DB">
+              <span style="font-weight:700;font-size:13px;color:#123626">Third-party inspection · {{ inspId }}</span>
+              <span style="font-family:'IBM Plex Mono',monospace;font-size:10px;color:#9CA3AF">SGS NIGERIA · SIGNED DIGITALLY</span>
+              <span style="margin-left:auto;background:#E8F8EE;color:#00692B;font-size:10.5px;font-weight:700;padding:3px 10px;border-radius:99px">✓ PASSED</span>
+            </div>
+            <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:0">
+              <div style="display:flex;gap:8px;padding:10px 18px;font-size:12px;color:#374151;border-right:1px solid #F1EFE8"><span style="color:#00A344">✓</span>Condition matches listing grade</div>
+              <div style="display:flex;gap:8px;padding:10px 18px;font-size:12px;color:#374151;border-right:1px solid #F1EFE8"><span style="color:#00A344">✓</span>Certifications verified on-site</div>
+              <div style="display:flex;gap:8px;padding:10px 18px;font-size:12px;color:#374151"><span style="color:#00A344">✓</span>Quantity &amp; spec per PO</div>
+            </div>
+          </div>
+        </sc-if>
+
+        <!-- 3-WAY MATCH -->
+        <sc-if value="{{ hasMatch }}" hint-placeholder-val="{{ false }}">
+          <div class="os-scroll" style="background:#fff;border:1px solid #E7E4DB;border-radius:12px;overflow:hidden">
+            <div style="display:flex;align-items:center;gap:10px;padding:12px 18px;border-bottom:1px solid #E7E4DB">
+              <span style="font-weight:700;font-size:13px;color:#123626">Invoice 3-way match · {{ invId }}</span>
+              <span style="font-family:'IBM Plex Mono',monospace;font-size:10px;color:#9CA3AF">PO ↔ GRN ↔ INVOICE · AUTOMATED</span>
+              <span style="{{ matchPillSt }}">{{ matchPill }}</span>
+            </div>
+            <div style="display:grid;grid-template-columns:2fr 1fr 1fr 1fr .9fr;padding:8px 18px;font-family:'IBM Plex Mono',monospace;font-size:9.5px;letter-spacing:1px;color:#9CA3AF;border-bottom:1px solid #F1EFE8"><span>LINE</span><span>PO</span><span>GRN</span><span>INVOICE</span><span style="text-align:right">STATUS</span></div>
+            <sc-for list="{{ matchRows }}" as="m" hint-placeholder-count="2">
+              <div style="display:grid;grid-template-columns:2fr 1fr 1fr 1fr .9fr;padding:9px 18px;font-size:12px;border-bottom:1px solid #F1EFE8;align-items:center">
+                <span style="color:#374151">{{ m.name }}</span>
+                <span style="font-family:'IBM Plex Mono',monospace;color:#123626;font-weight:600">{{ m.amt }}</span>
+                <span style="font-family:'IBM Plex Mono',monospace;color:#00692B">✓ RCVD</span>
+                <span style="font-family:'IBM Plex Mono',monospace;color:#123626;font-weight:600">{{ m.amt }}</span>
+                <span style="text-align:right;font-family:'IBM Plex Mono',monospace;color:#00692B;font-weight:600">✓ MATCH</span>
+              </div>
+            </sc-for>
+            <sc-if value="{{ isPaid }}" hint-placeholder-val="{{ false }}">
+              <div style="display:flex;gap:8px;align-items:center;padding:11px 18px;background:#E8F8EE;font-size:12px;color:#00692B;font-weight:700">✓ Payment released from escrow · {{ poDetValue }} · remittance advice sent to {{ poDetSup }}</div>
+            </sc-if>
+          </div>
+        </sc-if>
+      </div>
+    </sc-if>
+
+    <!-- ======== SOURCEOS INTEL ======== -->
+    <sc-if value="{{ isIntel }}" hint-placeholder-val="{{ false }}">
+      <div data-screen-label="SourceOS intelligence" style="display:flex;flex-direction:column;gap:16px">
+        <div style="display:flex;align-items:baseline;gap:12px"><h1 style="margin:0;font-size:21px;font-weight:800;color:#123626;letter-spacing:-.4px">SourceOS intelligence</h1><span style="font-family:'IBM Plex Mono',monospace;font-size:10.5px;color:#9CA3AF">SUPPLIER SCORING 0–100 · PRICE ANOMALY DETECTION · EXPLAINABLE</span></div>
+        <div class="os-scroll" style="background:#fff;border:1px solid #E7E4DB;border-radius:12px;overflow:hidden">
+          <div style="display:grid;grid-template-columns:1.6fr .7fr .9fr .8fr .8fr 1.6fr;padding:9px 18px;font-family:'IBM Plex Mono',monospace;font-size:9.5px;letter-spacing:1px;color:#9CA3AF;border-bottom:1px solid #E7E4DB"><span>SUPPLIER</span><span>SCORE</span><span>ON-TIME</span><span>DISPUTES</span><span>RISK</span><span>WHY THIS SCORE</span></div>
+          <sc-for list="{{ supplierRows }}" as="s" hint-placeholder-count="3">
+            <div style="display:grid;grid-template-columns:1.6fr .7fr .9fr .8fr .8fr 1.6fr;padding:13px 18px;font-size:12.5px;border-bottom:1px solid #F1EFE8;align-items:center">
+              <span style="color:#123626;font-weight:700">{{ s.name }}<br><span style="font-family:'IBM Plex Mono',monospace;font-size:10px;color:#9CA3AF;font-weight:400">{{ s.certs }}</span></span>
+              <span style="{{ s.scoreSt }}">{{ s.score }}</span>
+              <span style="font-family:'IBM Plex Mono',monospace;color:#374151">{{ s.onTime }}</span>
+              <span style="font-family:'IBM Plex Mono',monospace;color:#374151">{{ s.disputes }}</span>
+              <span style="{{ s.riskSt }}">{{ s.risk }}</span>
+              <span style="font-size:11px;color:#6B7280;line-height:1.5">{{ s.why }}</span>
+            </div>
+          </sc-for>
+        </div>
+        <div style="background:#fff;border:1px solid #E7E4DB;border-radius:12px;padding:18px;display:flex;flex-direction:column;gap:10px">
+          <div style="font-weight:700;font-size:13.5px;color:#123626">Price anomaly detection <span style="font-family:'IBM Plex Mono',monospace;font-size:10px;color:#9CA3AF;font-weight:400">· FLAGS LOW AND HIGH OUTLIERS · ±{{ anomalyThreshold }}% VS. BENCHMARK · POOL &lt; 5 → CATEGORY INDEX</span></div>
+          <div style="background:#FDECEC;border:1px solid #F1B5B5;border-radius:9px;padding:11px 14px;font-size:12px;color:#8E2323;line-height:1.5">⚠ <b>RFQ-2214 / Mobilization (LOW):</b> Bonny Marine quoted $650k — 47% below benchmark ($1.28M). Basis: category price index — quote pool n=3 &lt; 5, so line-item median is suppressed. Historical pattern: 3 of 4 similar deviations preceded scope-gap change orders. Recommend clarification before award.</div>
+          <div style="background:#FFF7E8;border:1px solid #F5D9A0;border-radius:9px;padding:11px 14px;font-size:12px;color:#B45309;line-height:1.5">◔ <b>RFQ-2214 / Total (HIGH):</b> GulfTech +23.8% vs benchmark — within tolerance for OEM-certified fabrication; monitored, not flagged. High-side checks also screen for collusion patterns across repeat RFQs.</div>
+          <div style="background:#E8F8EE;border:1px solid #9FDDB6;border-radius:9px;padding:11px 14px;font-size:12px;color:#00692B;line-height:1.5">✓ All other line items within 12% of benchmark. Day-rate spread is consistent with rig age and certification status.</div>
+        </div>
+      </div>
+    </sc-if>
+
+    <!-- ======== SEO ENGINE ======== -->
+    <sc-if value="{{ isSeo }}" hint-placeholder-val="{{ false }}">
+      <div data-screen-label="SEO engine" style="display:flex;flex-direction:column;gap:16px">
+        <div style="display:flex;align-items:baseline;gap:12px"><h1 style="margin:0;font-size:21px;font-weight:800;color:#123626;letter-spacing:-.4px">SEO engine</h1><span style="font-family:'IBM Plex Mono',monospace;font-size:10.5px;color:#9CA3AF">CONTENT-COMPLETENESS GATE ON · THIN PAGES HELD AS NOINDEX · SSR · AUTO SITEMAPS</span></div>
+        <div style="display:grid;grid-template-columns:repeat(5,1fr);gap:12px">
+          <sc-for list="{{ seoFamilies }}" as="f" hint-placeholder-count="5">
+            <div style="background:#fff;border:1px solid #E7E4DB;border-radius:12px;padding:14px;display:flex;flex-direction:column;gap:5px">
+              <div style="font-family:'IBM Plex Mono',monospace;font-size:12px;color:#B45309;font-weight:600">{{ f.route }}</div>
+              <div style="font-size:20px;font-weight:800;color:#123626">{{ f.count }}</div>
+              <div style="font-size:10.5px;color:#6B7280;line-height:1.45">{{ f.note }}</div>
+            </div>
+          </sc-for>
+        </div>
+        <div style="background:#fff;border:1px solid #E7E4DB;border-radius:12px;padding:18px;display:flex;flex-direction:column;gap:8px;max-width:720px">
+          <div style="font-weight:700;font-size:13px;color:#123626">Example — supplier entity page as Google sees it</div>
+          <div style="font-size:14.5px;color:#1A0DAB;font-weight:500">Deepwater Assets Ltd — Verified Rig &amp; Marine Supplier, Port Harcourt | OilfieldHub</div>
+          <div style="font-size:11.5px;color:#00692B;font-family:'IBM Plex Mono',monospace">oilfieldhub.africa/suppliers/deepwater-assets-ltd</div>
+          <div style="font-size:12px;color:#4B5563;line-height:1.5">SourceOS score 92/100 · 23 completed contracts · API, DNV, NUPRC certified. Request quotes for jack-up rigs, PSVs and marine services…</div>
+          <div style="font-family:'IBM Plex Mono',monospace;font-size:9.5px;color:#9CA3AF">SCHEMA.ORG: ORGANIZATION + AGGREGATERATING + OFFERCATALOG · CANONICAL + HREFLANG EN/FR/PT</div>
+        </div>
+      </div>
+    </sc-if>
+
+    <!-- ======== EVENT LOG ======== -->
+    <sc-if value="{{ isEvents }}" hint-placeholder-val="{{ false }}">
+      <div data-screen-label="Event log" style="display:flex;flex-direction:column;gap:16px">
+        <div style="display:flex;align-items:baseline;gap:12px"><h1 style="margin:0;font-size:21px;font-weight:800;color:#123626;letter-spacing:-.4px">Event log</h1><span style="font-family:'IBM Plex Mono',monospace;font-size:10.5px;color:#9CA3AF">APPEND-ONLY · HASH-CHAINED · CHAIN VERIFIED ✓ · {{ eventCount }} EVENTS</span></div>
+        <div class="os-scroll" style="background:#123626;border-radius:12px;overflow:hidden;padding:6px 0">
+          <sc-for list="{{ events }}" as="e" hint-placeholder-count="8">
+            <div style="display:grid;grid-template-columns:.9fr .6fr 1.1fr .8fr 2.2fr;gap:10px;padding:8px 18px;font-family:'IBM Plex Mono',monospace;font-size:11px;border-bottom:1px solid rgba(255,255,255,.05)">
+              <span style="color:rgba(255,255,255,.45)">{{ e.ts }}</span>
+              <span style="color:rgba(255,255,255,.28)">{{ e.hash }}</span>
+              <span style="color:#F5A623">{{ e.type }}</span>
+              <span style="color:#00C853">{{ e.entity }}</span>
+              <span style="color:rgba(255,255,255,.75)">{{ e.note }}</span>
+            </div>
+          </sc-for>
+        </div>
+      </div>
+    </sc-if>
+
+    <!-- ======== MESSAGES (buyer + supplier) ======== -->
+    <sc-if value="{{ isMsgs }}" hint-placeholder-val="{{ false }}">
+      <div data-screen-label="Messages" style="display:flex;flex-direction:column;gap:16px;max-width:760px">
+        <div style="display:flex;align-items:baseline;gap:12px">
+          <h1 style="margin:0;font-size:21px;font-weight:800;color:#123626;letter-spacing:-.4px">Messages</h1>
+          <span style="font-family:'IBM Plex Mono',monospace;font-size:10.5px;color:#9CA3AF">SAHARA ENERGY E&amp;P ↔ DEEPWATER ASSETS LTD · RE: RFQ-2214</span>
+        </div>
+        <div style="background:#fff;border:1px solid #E7E4DB;border-radius:12px;display:flex;flex-direction:column;min-height:420px">
+          <div style="flex:1;padding:18px;display:flex;flex-direction:column;gap:10px">
+            <sc-for list="{{ msgRows }}" as="m" hint-placeholder-count="3">
+              <div style="{{ m.rowSt }}">
+                <div style="{{ m.bubbleSt }}">
+                  <div style="font-size:12.5px;line-height:1.5">{{ m.text }}</div>
+                  <div style="{{ m.metaSt }}">{{ m.who }} · {{ m.ts }}</div>
+                </div>
+              </div>
+            </sc-for>
+          </div>
+          <div style="display:flex;gap:10px;padding:12px 16px;border-top:1px solid #E7E4DB">
+            <input value="{{ msgDraft }}" onChange="{{ onMsgDraft }}" placeholder="Write a message… (files, quotes and inspection reports attach here)" style="flex:1;border:1.5px solid #D1D5DB;border-radius:8px;padding:10px 12px;font-size:13px;font-family:Archivo;color:#123626">
+            <button onClick="{{ sendMsg }}" style="background:#F5A623;border:none;color:#123626;font-weight:800;font-size:13px;padding:10px 20px;border-radius:8px;cursor:pointer;font-family:Archivo">Send</button>
+          </div>
+        </div>
+        <div style="font-size:11px;color:#9CA3AF">All negotiation happens on-platform — threads are evidence in dispute resolution.</div>
+      </div>
+    </sc-if>
+
+    <!-- ======== ADMIN: OVERVIEW ======== -->
+    <sc-if value="{{ isAdash }}" hint-placeholder-val="{{ false }}">
+      <div data-screen-label="Admin overview" style="display:flex;flex-direction:column;gap:18px">
+        <div style="display:flex;align-items:baseline;gap:12px">
+          <h1 style="margin:0;font-size:21px;font-weight:800;color:#123626;letter-spacing:-.4px">Platform overview</h1>
+          <span style="font-family:'IBM Plex Mono',monospace;font-size:11px;color:#9CA3AF">OILFIELDHUB SOURCEOS · ALL ORGANIZATIONS</span>
+        </div>
+        <div class="os-grid2" style="display:grid;grid-template-columns:repeat(4,1fr);gap:14px">
+          <div style="background:#fff;border:1px solid #E7E4DB;border-radius:12px;padding:16px"><div style="font-family:'IBM Plex Mono',monospace;font-size:9.5px;letter-spacing:1.5px;color:#9CA3AF">GMV YTD</div><div style="font-size:24px;font-weight:800;color:#123626">$86.4M</div><div style="font-size:11px;color:#00A344;font-weight:600">▲ 34% vs FY2025</div></div>
+          <div style="background:#fff;border:1px solid #E7E4DB;border-radius:12px;padding:16px"><div style="font-family:'IBM Plex Mono',monospace;font-size:9.5px;letter-spacing:1.5px;color:#9CA3AF">VERIFIED ORGS</div><div style="font-size:24px;font-weight:800;color:#123626">{{ admVerified }}</div><div style="font-size:11px;color:#6B7280">across 12 countries</div></div>
+          <div style="background:#fff;border:1px solid #E7E4DB;border-radius:12px;padding:16px"><div style="font-family:'IBM Plex Mono',monospace;font-size:9.5px;letter-spacing:1.5px;color:#9CA3AF">PENDING VERIFICATION</div><div style="font-size:24px;font-weight:800;color:#B45309">{{ admPending }}</div><div style="font-size:11px;color:#6B7280">SLA: 48h review</div></div>
+          <div style="background:#fff;border:1px solid #E7E4DB;border-radius:12px;padding:16px"><div style="font-family:'IBM Plex Mono',monospace;font-size:9.5px;letter-spacing:1.5px;color:#9CA3AF">OPEN DISPUTES</div><div style="font-size:24px;font-weight:800;color:{{ admDisputeColor }}">{{ admDisputes }}</div><div style="font-size:11px;color:#6B7280">escrow frozen on disputed POs</div></div>
+        </div>
+        <div class="os-scroll" style="background:#fff;border:1px solid #E7E4DB;border-radius:12px;overflow:hidden">
+          <div style="display:flex;padding:13px 16px;border-bottom:1px solid #E7E4DB"><span style="font-weight:700;font-size:13.5px;color:#123626">Platform activity</span><button onClick="{{ goEvents }}" style="margin-left:auto;font-size:11.5px;font-weight:600;color:#B45309;background:none;border:none;cursor:pointer;font-family:Archivo">Event log →</button></div>
+          <sc-for list="{{ recentEvents }}" as="e" hint-placeholder-count="5">
+            <div style="padding:9px 16px;border-bottom:1px solid #F1EFE8;display:flex;gap:10px;font-family:'IBM Plex Mono',monospace;font-size:10.5px"><span style="color:#B45309">{{ e.type }}</span><span style="color:#00A344">{{ e.entity }}</span><span style="color:#374151;font-family:Archivo;font-size:11.5px">{{ e.note }}</span><span style="color:#9CA3AF;margin-left:auto">{{ e.ts }}</span></div>
+          </sc-for>
+        </div>
+      </div>
+    </sc-if>
+
+    <!-- ======== ADMIN: VERIFICATION QUEUE ======== -->
+    <sc-if value="{{ isVerify }}" hint-placeholder-val="{{ false }}">
+      <div data-screen-label="Admin verification queue" style="display:flex;flex-direction:column;gap:16px">
+        <div style="display:flex;align-items:baseline;gap:12px"><h1 style="margin:0;font-size:21px;font-weight:800;color:#123626;letter-spacing:-.4px">KYB verification queue</h1><span style="font-family:'IBM Plex Mono',monospace;font-size:10.5px;color:#9CA3AF">CAC · TAX ID · SECTOR LICENCES · DOCUMENT CHECKS AUTOMATED, DECISION HUMAN</span></div>
+        <div class="os-scroll" style="background:#fff;border:1px solid #E7E4DB;border-radius:12px;overflow:hidden">
+          <sc-for list="{{ verifRows }}" as="v" hint-placeholder-count="3">
+            <div style="display:flex;gap:14px;padding:14px 18px;border-bottom:1px solid #F1EFE8;align-items:center">
+              <div style="flex:1;display:flex;flex-direction:column;gap:3px">
+                <div style="font-weight:700;font-size:13.5px;color:#123626">{{ v.name }}</div>
+                <div style="font-family:'IBM Plex Mono',monospace;font-size:10.5px;color:#6B7280">{{ v.region }} · DOCS: {{ v.docs }} · ALL FILES READABLE ✓</div>
+              </div>
+              <sc-if value="{{ v.pending }}" hint-placeholder-val="{{ true }}">
+                <button onClick="{{ v.reject }}" style="border:1px solid #D1D5DB;background:#fff;color:#374151;font-weight:600;font-size:12px;padding:8px 14px;border-radius:7px;cursor:pointer;font-family:Archivo">Reject</button>
+                <button onClick="{{ v.approve }}" style="background:#00C853;border:none;color:#fff;font-weight:700;font-size:12px;padding:8px 16px;border-radius:7px;cursor:pointer;font-family:Archivo">✓ Verify</button>
+              </sc-if>
+              <sc-if value="{{ v.decided }}" hint-placeholder-val="{{ false }}">
+                <span style="{{ v.pillSt }}">{{ v.pill }}</span>
+              </sc-if>
+            </div>
+          </sc-for>
+        </div>
+      </div>
+    </sc-if>
+
+    <!-- ======== ADMIN: DISPUTES ======== -->
+    <sc-if value="{{ isDisputes }}" hint-placeholder-val="{{ false }}">
+      <div data-screen-label="Admin disputes" style="display:flex;flex-direction:column;gap:16px;max-width:820px">
+        <div style="display:flex;align-items:baseline;gap:12px"><h1 style="margin:0;font-size:21px;font-weight:800;color:#123626;letter-spacing:-.4px">Dispute resolution</h1><span style="font-family:'IBM Plex Mono',monospace;font-size:10.5px;color:#9CA3AF">STRUCTURED ESCALATION: OPEN → MEDIATION → RESOLVED</span></div>
+        <sc-if value="{{ noDisputes }}" hint-placeholder-val="{{ true }}">
+          <div style="background:#fff;border:1px dashed #D1D5DB;border-radius:12px;padding:32px;text-align:center;font-size:13px;color:#9CA3AF">No open disputes. Buyers raise disputes from a PO's detail page (Buyer → Purchase orders).</div>
+        </sc-if>
+        <sc-for list="{{ disputeRows }}" as="d" hint-placeholder-count="0">
+          <div style="background:#fff;border:1px solid #E7E4DB;border-radius:12px;padding:18px;display:flex;flex-direction:column;gap:12px">
+            <div style="display:flex;gap:10px;align-items:center">
+              <span style="font-family:'IBM Plex Mono',monospace;font-size:12px;font-weight:600;color:#123626">{{ d.id }}</span>
+              <span style="font-weight:700;font-size:13.5px;color:#123626">{{ d.po }} · {{ d.reason }}</span>
+              <span style="{{ d.pillSt }}">{{ d.stageLabel }}</span>
+              <sc-if value="{{ d.canAdvance }}" hint-placeholder-val="{{ false }}">
+                <button onClick="{{ d.advance }}" style="margin-left:auto;background:#123626;border:none;color:#fff;font-weight:700;font-size:12px;padding:8px 14px;border-radius:7px;cursor:pointer;font-family:Archivo">{{ d.advanceLabel }}</button>
+              </sc-if>
+            </div>
+            <div style="font-size:12px;color:#6B7280;line-height:1.55">{{ d.note }}</div>
+          </div>
+        </sc-for>
+      </div>
+    </sc-if>
+
+    <!-- ======== SUPPLIER: INBOX ======== -->
+    <sc-if value="{{ isInbox }}" hint-placeholder-val="{{ false }}">
+      <div data-screen-label="Supplier RFQ inbox" style="display:flex;flex-direction:column;gap:16px">
+        <div style="display:flex;align-items:baseline;gap:12px"><h1 style="margin:0;font-size:21px;font-weight:800;color:#123626;letter-spacing:-.4px">RFQ inbox</h1><span style="font-family:'IBM Plex Mono',monospace;font-size:10.5px;color:#9CA3AF">DEEPWATER ASSETS LTD · SCORE 92/100</span></div>
+        <div class="os-scroll" style="background:#fff;border:1px solid #E7E4DB;border-radius:12px;overflow:hidden">
+          <div style="display:flex;gap:14px;padding:15px 18px;border-bottom:1px solid #F1EFE8;align-items:center">
+            <div style="flex:1;display:flex;flex-direction:column;gap:3px">
+              <div style="font-weight:700;font-size:14px;color:#123626">RFQ-2214 · Jack-up drilling campaign — OML 120 <span style="font-family:'IBM Plex Mono',monospace;font-size:10px;color:#9CA3AF">SAHARA ENERGY E&amp;P</span></div>
+              <div style="font-family:'IBM Plex Mono',monospace;font-size:10.5px;color:#6B7280">3 LINE ITEMS · CLOSES 11 JUL · 90-DAY CAMPAIGN</div>
+            </div>
+            <span style="background:#E8F8EE;color:#00692B;font-size:11px;font-weight:700;padding:5px 12px;border-radius:99px">✓ QUOTE SUBMITTED — $7.60M</span>
+          </div>
+          <sc-for list="{{ inboxCustom }}" as="cr" hint-placeholder-count="0">
+            <div style="display:flex;gap:14px;padding:15px 18px;border-bottom:1px solid #F1EFE8;align-items:center;background:#FFF7E8">
+              <div style="flex:1;display:flex;flex-direction:column;gap:3px">
+                <div style="font-weight:700;font-size:14px;color:#123626">{{ cr.id }} · {{ cr.title }} <span style="font-family:'IBM Plex Mono',monospace;font-size:10px;color:#9CA3AF">SAHARA ENERGY E&amp;P</span></div>
+                <div style="font-family:'IBM Plex Mono',monospace;font-size:10.5px;color:#6B7280">{{ cr.meta }}</div>
+              </div>
+              <span style="background:#F5A623;color:#123626;font-size:11px;font-weight:800;padding:5px 12px;border-radius:99px">● NEW INVITATION</span>
+            </div>
+          </sc-for>
+          <div style="display:flex;gap:14px;padding:15px 18px;align-items:center">
+            <div style="flex:1;display:flex;flex-direction:column;gap:3px">
+              <div style="font-weight:700;font-size:14px;color:#123626">RFQ-2215 · FR coveralls resupply — 4,000 sets <span style="font-family:'IBM Plex Mono',monospace;font-size:10px;color:#9CA3AF">SAHARA ENERGY E&amp;P</span></div>
+              <div style="font-family:'IBM Plex Mono',monospace;font-size:10.5px;color:#6B7280">2 LINE ITEMS · CLOSES 18 JUL · EN 11612 REQUIRED</div>
+            </div>
+            <sc-if value="{{ notQuoted2215 }}" hint-placeholder-val="{{ true }}">
+              <button onClick="{{ goSubmit }}" style="background:#F5A623;border:none;color:#123626;font-weight:700;font-size:12px;padding:9px 16px;border-radius:7px;cursor:pointer;font-family:Archivo">Submit quote →</button>
+            </sc-if>
+            <sc-if value="{{ quoted2215 }}" hint-placeholder-val="{{ false }}">
+              <span style="background:#E8F8EE;color:#00692B;font-size:11px;font-weight:700;padding:5px 12px;border-radius:99px">✓ QUOTE SUBMITTED — {{ q2215Total }}</span>
+            </sc-if>
+          </div>
+        </div>
+      </div>
+    </sc-if>
+
+    <!-- ======== SUPPLIER: SUBMIT QUOTE ======== -->
+    <sc-if value="{{ isSubmit }}" hint-placeholder-val="{{ false }}">
+      <div data-screen-label="Supplier quote submission" style="display:flex;flex-direction:column;gap:16px;max-width:720px">
+        <div style="display:flex;align-items:center;gap:12px">
+          <button onClick="{{ goInbox }}" style="border:1px solid #D1D5DB;background:#fff;border-radius:7px;padding:6px 12px;font-size:12px;color:#374151;cursor:pointer;font-family:Archivo;font-weight:600">← Inbox</button>
+          <h1 style="margin:0;font-size:19px;font-weight:800;color:#123626;letter-spacing:-.4px">Quote — RFQ-2215 · FR coveralls resupply</h1>
+        </div>
+        <div style="background:#fff;border:1px solid #E7E4DB;border-radius:12px;padding:20px;display:flex;flex-direction:column;gap:16px">
+          <div style="display:grid;grid-template-columns:2fr 1fr 1fr;gap:10px;align-items:center;font-size:12.5px">
+            <span style="font-family:'IBM Plex Mono',monospace;font-size:9.5px;letter-spacing:1px;color:#9CA3AF">LINE ITEM</span>
+            <span style="font-family:'IBM Plex Mono',monospace;font-size:9.5px;letter-spacing:1px;color:#9CA3AF">UNIT PRICE (USD)</span>
+            <span style="font-family:'IBM Plex Mono',monospace;font-size:9.5px;letter-spacing:1px;color:#9CA3AF;text-align:right">LINE TOTAL</span>
+            <span style="color:#374151;font-weight:600">FR coveralls EN 11612 · 4,000 sets</span>
+            <input value="{{ p1 }}" onChange="{{ onP1 }}" style="border:1.5px solid #D1D5DB;border-radius:7px;padding:9px 11px;font-size:13px;font-family:'IBM Plex Mono',monospace;color:#123626;width:110px">
+            <span style="text-align:right;font-family:'IBM Plex Mono',monospace;color:#123626;font-weight:600">{{ line1Total }}</span>
+            <span style="color:#374151;font-weight:600">Impact gloves EN 388 · 8,000 pairs</span>
+            <input value="{{ p2 }}" onChange="{{ onP2 }}" style="border:1.5px solid #D1D5DB;border-radius:7px;padding:9px 11px;font-size:13px;font-family:'IBM Plex Mono',monospace;color:#123626;width:110px">
+            <span style="text-align:right;font-family:'IBM Plex Mono',monospace;color:#123626;font-weight:600">{{ line2Total }}</span>
+          </div>
+          <div style="display:flex;justify-content:space-between;border-top:1px solid #F1EFE8;padding-top:14px;align-items:center">
+            <span style="font-size:13px;color:#6B7280">Quote total · delivery Lagos, 21 days · valid 14 days</span>
+            <span style="font-family:'IBM Plex Mono',monospace;font-size:20px;font-weight:600;color:#123626">{{ formTotal }}</span>
+          </div>
+          <sc-if value="{{ notQuoted2215 }}" hint-placeholder-val="{{ true }}">
+            <button onClick="{{ submitQuote }}" style="background:#F5A623;border:none;color:#123626;font-weight:800;font-size:14px;padding:12px;border-radius:9px;cursor:pointer;font-family:Archivo">Submit quote to Sahara Energy E&amp;P</button>
+          </sc-if>
+          <sc-if value="{{ quoted2215 }}" hint-placeholder-val="{{ false }}">
+            <div style="background:#E8F8EE;border:1px solid #9FDDB6;border-radius:9px;padding:12px;font-size:13px;color:#00692B;font-weight:700;text-align:center">✓ Submitted — visible in buyer's RFQ-2215 and in the Event Log</div>
+          </sc-if>
+        </div>
+      </div>
+    </sc-if>
+
+    <!-- ======== SUPPLIER: HISTORY ======== -->
+    <sc-if value="{{ isHistory }}" hint-placeholder-val="{{ false }}">
+      <div data-screen-label="Supplier history" style="display:flex;flex-direction:column;gap:16px">
+        <h1 style="margin:0;font-size:21px;font-weight:800;color:#123626;letter-spacing:-.4px">Performance history</h1>
+        <div class="os-grid2" style="display:grid;grid-template-columns:repeat(4,1fr);gap:14px">
+          <div style="background:#fff;border:1px solid #E7E4DB;border-radius:12px;padding:16px"><div style="font-family:'IBM Plex Mono',monospace;font-size:9.5px;letter-spacing:1.5px;color:#9CA3AF">SOURCEOS SCORE</div><div style="font-size:24px;font-weight:800;color:#00A344">92</div><div style="font-size:11px;color:#6B7280">Top 5% in Marine &amp; Drilling</div></div>
+          <div style="background:#fff;border:1px solid #E7E4DB;border-radius:12px;padding:16px"><div style="font-family:'IBM Plex Mono',monospace;font-size:9.5px;letter-spacing:1.5px;color:#9CA3AF">WIN RATE</div><div style="font-size:24px;font-weight:800;color:#123626">38%</div><div style="font-size:11px;color:#6B7280">23 of 61 RFQs quoted</div></div>
+          <div style="background:#fff;border:1px solid #E7E4DB;border-radius:12px;padding:16px"><div style="font-family:'IBM Plex Mono',monospace;font-size:9.5px;letter-spacing:1.5px;color:#9CA3AF">ON-TIME DELIVERY</div><div style="font-size:24px;font-weight:800;color:#123626">96%</div><div style="font-size:11px;color:#6B7280">0 disputes · 0 escrow holds</div></div>
+          <div style="background:#fff;border:1px solid #E7E4DB;border-radius:12px;padding:16px"><div style="font-family:'IBM Plex Mono',monospace;font-size:9.5px;letter-spacing:1.5px;color:#9CA3AF">REVENUE VIA HUB</div><div style="font-size:24px;font-weight:800;color:#123626">$41.7M</div><div style="font-size:11px;color:#6B7280">since 2024</div></div>
+        </div>
+        <div style="background:#fff;border:1px solid #E7E4DB;border-radius:12px;padding:16px;font-size:12px;color:#6B7280;line-height:1.6">Score drivers: certifications current (API · DNV · NUPRC), median response time 3.2h, price competitiveness within 8% of index. Improving invoice accuracy (+2 pts available) would raise the score to 94.</div>
+      </div>
+    </sc-if>
+
+  </div>
+</div>
+
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;startRole&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;options&quot;:[&quot;buyer&quot;,&quot;supplier&quot;],&quot;default&quot;:&quot;buyer&quot;,&quot;tsType&quot;:&quot;string&quot;,&quot;section&quot;:&quot;Demo&quot;},&quot;showTicker&quot;:{&quot;editor&quot;:&quot;boolean&quot;,&quot;default&quot;:true,&quot;tsType&quot;:&quot;boolean&quot;,&quot;section&quot;:&quot;Demo&quot;},&quot;anomalyThreshold&quot;:{&quot;editor&quot;:&quot;range&quot;,&quot;default&quot;:30,&quot;min&quot;:10,&quot;max&quot;:60,&quot;step&quot;:5,&quot;unit&quot;:&quot;%&quot;,&quot;tsType&quot;:&quot;number&quot;,&quot;section&quot;:&quot;SourceOS&quot;}}">
+class Component extends DCLogic {
+  state = {
+    role: null, route: 'dash', poSel: 'PO-0071',
+    awarded: false, awardRequested: false, quoted2215: false,
+    poExceptions: {},
+    p1: '38.50', p2: '4.20',
+    cTitle: '', cCloses: '25 JUL', cItems: [{ name: '', qty: '' }, { name: '', qty: '' }],
+    cInvited: { 'Deepwater Assets Ltd': true, 'GulfTech Fabrication': true, 'Bonny Marine Services': false },
+    customRfqs: [], nextRfqNum: 2216,
+    notifOpen: false, seenCount: 8,
+    msgDraft: '',
+    msgs: [
+      { from: 'supplier', text: 'Confirming the rig can mobilize within 14 days of contract signature — crew already on standby at Onne.', ts: '02 JUL 16:40' },
+      { from: 'buyer', text: 'Noted. Can you hold the $66,500 day rate if we extend the option period to 120 days?', ts: '02 JUL 17:05' },
+      { from: 'supplier', text: 'Yes — same day rate for the 30-day option. Standby rate unchanged. Reflected in our formal quote.', ts: '02 JUL 17:22' },
+    ],
+    disputes: [],
+    apDecided: [],
+    verifQueue: [
+      { name: 'Niger Delta Cranes Ltd', region: 'Port Harcourt', docs: 'CAC · TIN · LOLER', status: 'pending' },
+      { name: 'Lagos Offshore Catering', region: 'Lagos', docs: 'CAC · TIN · NAFDAC', status: 'pending' },
+      { name: 'Escravos Diving Services', region: 'Warri', docs: 'CAC · TIN · IMCA', status: 'pending' },
+    ],
+    poStages: { 'PO-0071': 2, 'PO-0064': 5 },
+    events: [
+      { ts: '01 JUL 09:02', type: 'rfq.created', entity: 'RFQ-2214', note: 'Jack-up drilling campaign OML 120 — 3 line items' },
+      { ts: '01 JUL 09:15', type: 'rfq.published', entity: 'RFQ-2214', note: '3 suppliers matched and notified' },
+      { ts: '01 JUL 14:40', type: 'quote.submitted', entity: 'RFQ-2214', note: 'Bonny Marine Services — $6.52M' },
+      { ts: '02 JUL 08:22', type: 'quote.submitted', entity: 'RFQ-2214', note: 'GulfTech Fabrication — $8.07M' },
+      { ts: '02 JUL 16:05', type: 'quote.submitted', entity: 'RFQ-2214', note: 'Deepwater Assets Ltd — $7.60M' },
+      { ts: '02 JUL 16:06', type: 'anomaly.flagged', entity: 'RFQ-2214', note: 'Bonny mob fee 47% below median — clarification advised' },
+      { ts: '03 JUL 10:22', type: 'rfq.published', entity: 'RFQ-2215', note: 'FR coveralls resupply — 2 items, 3 suppliers invited' },
+      { ts: '03 JUL 11:47', type: 'grn.received', entity: 'PO-0071', note: 'HVAC package units received at Onne yard' },
+    ],
+  };
+
+  nav(route) { this.setState({ route }); }
+
+  approveAward() {
+    if (this.state.awarded) return;
+    this.setState(s => ({ awarded: true, poStages: { ...s.poStages, 'PO-0093': 0 }, apDecided: [...s.apDecided, { kicker: 'AWARD APPROVAL · RFQ-2214', note: 'Approved — PO-0093 generated to Deepwater Assets Ltd, $7.60M', ts: this.now() }] }));
+    this.addEvent('approval.granted', 'RFQ-2214', 'Award approved — A. Bello, Finance Director (requester J. Okafor ≠ approver ✓)');
+    this.addEvent('rfq.awarded', 'RFQ-2214', 'Awarded to Deepwater Assets Ltd — composite 92.2, weights locked at publish (30/30/40)');
+    this.addEvent('po.generated', 'PO-0093', 'Generated from winning quote — $7.60M, escrow plan attached');
+  }
+
+  approvePayment(id, value, sup) {
+    if ((this.state.poStages[id] ?? 0) !== 4) return;
+    this.setState(s => ({ poStages: { ...s.poStages, [id]: 5 }, apDecided: [...s.apDecided, { kicker: 'PAYMENT RELEASE · ' + id, note: 'Approved — ' + value + ' released from escrow to ' + sup, ts: this.now() }] }));
+    this.addEvent('approval.granted', id, 'Escrow release approved — A. Bello, Finance Director (> $250k threshold)');
+    this.addEvent('payment.released', id, value + ' released to ' + sup + ' — lifecycle complete');
+  }
+
+  now() { const d = new Date(); return '03 JUL ' + String(d.getHours()).padStart(2, '0') + ':' + String(d.getMinutes()).padStart(2, '0'); }
+  addEvent(type, entity, note) { this.setState(s => ({ events: [...s.events, { ts: this.now(), type, entity, note }] })); }
+
+  renderVals() {
+    const S = this.state;
+    const role = S.role ?? (this.props.startRole ?? 'buyer');
+    const route = S.route;
+    const thr = this.props.anomalyThreshold ?? 30;
+    const navy = '#123626', amber = '#F5A623';
+    const mono = "'IBM Plex Mono',monospace";
+
+    const navBtn = (active) => ({ display: 'flex', alignItems: 'center', gap: 8, padding: '9px 18px', fontSize: 13, fontWeight: active ? 700 : 600, color: active ? navy : '#4B5563', background: active ? '#FFF7E8' : 'none', border: 'none', borderLeft: active ? '3px solid ' + amber : '3px solid transparent', cursor: 'pointer', fontFamily: 'Archivo', textAlign: 'left', width: '100%' });
+    const badge = (show, color, bg) => ({ marginLeft: 'auto', fontFamily: mono, fontSize: 10, fontWeight: 700, color, background: bg, borderRadius: 99, padding: show ? '1px 7px' : 0, display: show ? 'inline' : 'none' });
+
+    const openDisputes = S.disputes.filter(d => d.stage < 2).length;
+    const pendingVerif = S.verifQueue.filter(v => v.status === 'pending').length;
+    const payApprovalIds = Object.keys(S.poStages).filter(id => S.poStages[id] === 4 && !S.disputes.some(d => d.po === id && d.stage < 2));
+    const apCount = (S.awarded ? 0 : 1) + payApprovalIds.length;
+    const buyerNav = [
+      { id: 'dash', label: 'Dashboard' }, { id: 'rfqs', label: 'RFQs', badgeTxt: '2' },
+      { id: 'approvals', label: 'Approvals', badgeTxt: apCount ? String(apCount) : null },
+      { id: 'pos', label: 'Purchase orders' }, { id: 'messages', label: 'Messages' },
+      { id: 'intel', label: 'SourceOS intel', badgeTxt: '1', warn: true },
+      { id: 'seo', label: 'SEO engine' }, { id: 'events', label: 'Event log' },
+    ];
+    const supNav = [
+      { id: 'inbox', label: 'RFQ inbox', badgeTxt: S.quoted2215 ? null : '1' },
+      { id: 'submit', label: 'Submit quote' }, { id: 'messages', label: 'Messages' },
+      { id: 'history', label: 'History' },
+    ];
+    const adminNav = [
+      { id: 'adash', label: 'Overview' },
+      { id: 'verify', label: 'Verification queue', badgeTxt: pendingVerif ? String(pendingVerif) : null },
+      { id: 'disputes', label: 'Disputes', badgeTxt: openDisputes ? String(openDisputes) : null, warn: true },
+      { id: 'events', label: 'Event log' },
+    ];
+    const detailMap = { rfqDetail: 'rfqs', poDetail: 'pos', create: 'rfqs' };
+    const effRoute = detailMap[route] || route;
+    const navSet = role === 'buyer' ? buyerNav : role === 'supplier' ? supNav : adminNav;
+    const items = navSet.map(n => ({
+      label: n.label, badge: n.badgeTxt || '',
+      badgeSt: badge(!!n.badgeTxt, n.warn ? '#8E2323' : navy, n.warn ? '#FDECEC' : '#FFE9C4'),
+      st: navBtn(effRoute === n.id), go: () => this.nav(n.id),
+    }));
+
+    // POs
+    const stageNames = ['Issued', 'Acknowledged', 'GRN received', 'Inspection', 'Invoiced', 'Paid'];
+    const poData = [
+      { id: 'PO-0071', title: 'HVAC package units 20TR ×6', sup: 'GulfTech Fabrication', value: '$246,000', items: [{ name: 'HVAC package unit 20TR Ex-rated ×6', amt: '$234,000' }, { name: 'Delivery & commissioning, Onne', amt: '$12,000' }] },
+      { id: 'PO-0064', title: 'FR coveralls 2,000 sets', sup: 'Bonny Marine Services', value: '$74,200', items: [{ name: 'FR coveralls EN 11612 ×2,000', amt: '$68,000' }, { name: 'Freight, Lagos', amt: '$6,200' }] },
+    ];
+    if (S.awarded) poData.unshift({ id: 'PO-0093', title: 'Jack-up charter 90d — OML 120', sup: 'Deepwater Assets Ltd', value: '$7.60M', items: [{ name: 'Jack-up rig 400ft, 90 days @ $66,500', amt: '$5.99M' }, { name: 'Mobilization / demobilization', amt: '$1.20M' }, { name: 'Standby allowance, 10 days @ $41,000', amt: '$410,000' }] });
+    const stIdx = (id) => S.poStages[id] ?? 0;
+    const stagePill = (i) => ({ fontFamily: mono, fontSize: 10.5, fontWeight: 700, color: i >= 5 ? '#00692B' : i >= 2 ? '#B45309' : navy, background: i >= 5 ? '#E8F8EE' : i >= 2 ? '#FFF7E8' : '#EDEBE2', borderRadius: 99, padding: '3px 10px', width: 'fit-content' });
+    const pos = poData.map(p => ({ ...p, stageLabel: stageNames[stIdx(p.id)].toUpperCase(), stageSt: stagePill(stIdx(p.id)), open: () => this.setState({ route: 'poDetail', poSel: p.id }) }));
+
+    // approvals
+    const approvalRows = [];
+    if (!S.awarded) approvalRows.push({
+      kicker: 'AWARD APPROVAL · RFQ-2214',
+      title: 'Award jack-up campaign to Deepwater Assets — $7.60M',
+      why: 'SourceOS rank 1 (92.2, weights locked 30/30/40) · 96% on-time, 0 disputes · 5.9% above cheapest, lowest execution risk. Anomaly flagged on cheapest bid (47% below benchmark). Requested by J. Okafor — approver must differ.',
+      okLabel: 'Approve & generate PO', alt: 'Review evaluation →',
+      ok: () => this.approveAward(), altGo: () => this.nav('rfqDetail'),
+    });
+    payApprovalIds.forEach(id => {
+      const p = poData.find(x => x.id === id);
+      if (!p) return;
+      approvalRows.push({
+        kicker: 'PAYMENT RELEASE · ' + p.id,
+        title: 'Release ' + p.value + ' from escrow — ' + p.sup,
+        why: '3-way match ✓ · GRN signed E. Nwosu · inspection passed · invoice INV-' + p.id.slice(3) + ' matched to the cent.',
+        okLabel: 'Release funds', alt: 'Review PO →',
+        ok: () => this.approvePayment(p.id, p.value, p.sup),
+        altGo: () => this.setState({ route: 'poDetail', poSel: p.id }),
+      });
+    });
+
+    const poDet = poData.find(p => p.id === S.poSel) || poData[0];
+    const curStage = stIdx(poDet.id);
+    const poExc = S.poExceptions[poDet.id];
+    const poStages = stageNames.map((label, i) => {
+      const done = i < curStage, cur = i === curStage;
+      const c = done ? '#00C853' : cur ? amber : '#E7E4DB';
+      return {
+        label, mark: done ? '✓' : String(i + 1),
+        dot: { width: 22, height: 22, borderRadius: 99, background: done ? '#00C853' : cur ? amber : '#fff', border: done || cur ? 'none' : '1.5px solid #D1D5DB', color: done ? '#fff' : cur ? navy : '#9CA3AF', display: 'grid', placeItems: 'center', fontSize: 10, fontWeight: 800, flex: 'none' },
+        lineL: { flex: 1, height: 2, background: i === 0 ? 'transparent' : (i <= curStage ? '#00C853' : '#E7E4DB') },
+        lineR: { flex: 1, height: 2, background: i === stageNames.length - 1 ? 'transparent' : (i < curStage ? '#00C853' : '#E7E4DB') },
+        lblSt: { fontSize: 10.5, fontWeight: cur ? 700 : 600, color: cur ? '#B45309' : done ? navy : '#9CA3AF', fontFamily: mono },
+      };
+    });
+    const stageNotes = ['PO issued — awaiting escrow funding + supplier acknowledgement.', 'Acknowledged — goods/mobilization in progress.', 'GRN received — third-party inspection scheduled.', 'Inspection passed — awaiting supplier invoice.', 'Invoice matched to PO + GRN — payment scheduled from escrow.', 'Paid in full — lifecycle complete. Audit trail preserved.'];
+
+    // RFQs
+    const statusPill = (bg, c) => ({ fontFamily: mono, fontSize: 10.5, fontWeight: 700, color: c, background: bg, borderRadius: 99, padding: '3px 10px', width: 'fit-content' });
+    const rfq2214Status = S.awarded ? 'AWARDED' : 'EVALUATION';
+    const rfq2214StatusSt = S.awarded ? statusPill('#E8F8EE', '#00692B') : statusPill('#FFF7E8', '#B45309');
+    const rfqList = [
+      ...S.customRfqs.map(r => ({ ...r, statusSt: statusPill('#EDEBE2', navy), open: () => this.nav('rfqs') })),
+      { id: 'RFQ-2214', title: 'Jack-up drilling campaign — OML 120', status: rfq2214Status, statusSt: rfq2214StatusSt, items: '3', quotes: '3', closes: '11 JUL', open: () => this.nav('rfqDetail') },
+      { id: 'RFQ-2215', title: 'FR coveralls resupply — 4,000 sets', status: 'OPEN', statusSt: statusPill('#EDEBE2', navy), items: '2', quotes: S.quoted2215 ? '3' : '2', closes: '18 JUL', open: () => this.nav('rfqs') },
+    ];
+
+    // RFQ creation
+    const nextRfqId = 'RFQ-' + S.nextRfqNum;
+    const cRows = S.cItems.map((it, i) => ({
+      name: it.name, qty: it.qty,
+      onName: (e) => this.setState(s => ({ cItems: s.cItems.map((x, j) => j === i ? { ...x, name: e.target.value } : x) })),
+      onQty: (e) => this.setState(s => ({ cItems: s.cItems.map((x, j) => j === i ? { ...x, qty: e.target.value } : x) })),
+      remove: () => this.setState(s => ({ cItems: s.cItems.length > 1 ? s.cItems.filter((x, j) => j !== i) : s.cItems })),
+    }));
+    const supMeta = { 'Deepwater Assets Ltd': 92, 'GulfTech Fabrication': 81, 'Bonny Marine Services': 74 };
+    const cSups = Object.keys(supMeta).map(name => {
+      const on = !!S.cInvited[name];
+      return {
+        label: (on ? '✓ ' : '') + name + ' · ' + supMeta[name],
+        st: { border: on ? '1.5px solid #123626' : '1.5px solid #D1D5DB', background: on ? '#123626' : '#fff', color: on ? '#fff' : '#374151', borderRadius: 99, padding: '7px 14px', fontSize: 12, fontWeight: 600, cursor: 'pointer', fontFamily: 'Archivo' },
+        toggle: () => this.setState(s => ({ cInvited: { ...s.cInvited, [name]: !s.cInvited[name] } })),
+      };
+    });
+    const validItems = S.cItems.filter(it => it.name.trim());
+    const invitedCount = Object.values(S.cInvited).filter(Boolean).length;
+    const canPublish = S.cTitle.trim().length > 2 && validItems.length > 0 && invitedCount > 0;
+    const publishNote = canPublish
+      ? validItems.length + ' line item(s) · ' + invitedCount + ' supplier(s) will be notified · events persisted'
+      : 'Required: title, ≥1 line item, ≥1 invited supplier';
+
+    // comparison
+    const anomalyOn = 47 >= thr;
+    const redMono = { fontFamily: mono, color: '#C62828', fontWeight: 600, fontSize: 12.5 };
+    const okMono = { fontFamily: mono, color: navy, fontWeight: 600, fontSize: 12.5 };
+    const compareRows = [
+      { item: 'Rig charter, 90 days (day rate)', dw: '$66,500/d', gt: '$69,800/d', bm: '$61,000/d', bmSt: okMono },
+      { item: 'Mobilization / demobilization', dw: '$1.20M', gt: '$1.35M', bm: anomalyOn ? '$650k ⚠' : '$650k', bmSt: anomalyOn ? redMono : okMono },
+      { item: 'Standby rate (est. 10 days)', dw: '$41,000/d', gt: '$44,000/d', bm: '$38,000/d', bmSt: okMono },
+      { item: 'TOTAL (evaluated)', dw: '$7.60M', gt: '$8.07M', bm: '$6.52M', bmSt: okMono },
+    ];
+
+    const bar = (v, c) => ({ display: 'block', width: v + '%', height: '100%', background: c });
+    const cardBase = { background: '#fff', border: '1px solid #E7E4DB', borderRadius: 12, padding: 16, display: 'flex', flexDirection: 'column', gap: 10 };
+    const evalCards = [
+      { name: 'Deepwater Assets Ltd', score: '92.2', rank: 1, priceS: 86, relS: 96, riskS: 94, reasons: ['96% on-time across 23 contracts, 0 disputes', 'All certifications valid ≥ 6 months', 'Price 5.9% above cheapest, but lowest execution risk'], anomaly: false },
+      { name: 'GulfTech Fabrication', score: '82.3', rank: 2, priceS: 74, relS: 91, riskS: 82, reasons: ['Strong fabrication record; limited rig-charter history', 'Highest total price (+23.8% vs. benchmark — high-side check passed)'], anomaly: false },
+      { name: 'Bonny Marine Services', score: '71.8', rank: 3, priceS: 98, relS: 68, riskS: 55, reasons: ['Cheapest total by 14.2%', '1 dispute in trailing 12 months; 88% on-time'], anomaly: anomalyOn ? 'Mob fee 47% below benchmark (category index — pool n=3 < 5, median suppressed). Possible scope gap: clarify marine spread inclusion before award.' : false },
+    ].map(c => ({
+      ...c,
+      cardSt: c.rank === 1 ? { ...cardBase, border: '1.5px solid ' + amber, boxShadow: '0 4px 14px rgba(245,166,35,.15)' } : cardBase,
+      rankLabel: 'RANK ' + c.rank,
+      rankSt: { fontFamily: mono, fontSize: 9.5, fontWeight: 700, letterSpacing: 1, color: c.rank === 1 ? navy : '#6B7280', background: c.rank === 1 ? amber : '#EDEBE2', borderRadius: 5, padding: '3px 8px' },
+      priceBar: bar(c.priceS, navy), relBar: bar(c.relS, '#00C853'), riskBar: bar(c.riskS, c.riskS < 60 ? '#C62828' : '#F5A623'),
+      awardable: c.rank === 1 && !S.awarded && !S.awardRequested, requested: c.rank === 1 && S.awardRequested && !S.awarded, awarded: c.rank === 1 && S.awarded,
+    }));
+
+    // suppliers / intel
+    const scorePill = (v) => ({ fontFamily: mono, fontSize: 15, fontWeight: 600, color: v >= 85 ? '#00692B' : v >= 75 ? '#B45309' : '#8E2323' });
+    const riskPill = (r) => ({ fontFamily: mono, fontSize: 10.5, fontWeight: 700, color: r === 'LOW' ? '#00692B' : r === 'MEDIUM' ? '#B45309' : '#8E2323' });
+    const supplierRows = [
+      { name: 'Deepwater Assets Ltd', certs: 'API · DNV · NUPRC', score: '92', scoreSt: scorePill(92), onTime: '96%', disputes: '0', risk: 'LOW', riskSt: riskPill('LOW'), why: '23 completed contracts · certs current · median response 3.2h · price within 8% of index' },
+      { name: 'GulfTech Fabrication', certs: 'ASME · ISO 3834', score: '81', scoreSt: scorePill(81), onTime: '91%', disputes: '0', risk: 'LOW', riskSt: riskPill('LOW'), why: 'Strong QA record · newer to rig charters (category-weight penalty −6)' },
+      { name: 'Bonny Marine Services', certs: 'NIMASA · ISO 9001', score: '74', scoreSt: scorePill(74), onTime: '88%', disputes: '1', risk: 'MEDIUM', riskSt: riskPill('MEDIUM'), why: '1 dispute (late demob, resolved) · 2 price anomalies flagged in 12 months' },
+      { name: 'Niger Delta Cranes Ltd', certs: 'CAC · TIN · LOLER — KYB VERIFIED JUL 2026', score: 'NEW', scoreSt: { fontFamily: mono, fontSize: 11, fontWeight: 700, color: '#6B7280', letterSpacing: 1 }, onTime: '—', disputes: '—', risk: 'UNRATED', riskSt: { fontFamily: mono, fontSize: 10.5, fontWeight: 700, color: '#6B7280' }, why: 'Cold-start protected: 0 completed contracts — shown as UNRATED (never a low number); evaluation treats missing reliability as neutral, not zero' },
+    ];
+
+    const seoFamilies = [
+      { route: '/suppliers/*', count: '412', note: 'Published of 640 verified — 228 held (noindex) below content-completeness threshold: score + history + certs required' },
+      { route: '/categories/*', count: '18', note: 'Category × location matrix, auto-generated' },
+      { route: '/rfq-template/*', count: '112', note: '“RFQ template for jack-up charter” long-tail capture' },
+      { route: '/guide/*', count: '57', note: 'Procurement guides feeding the funnel' },
+      { route: '/compare/*', count: '204', note: 'Supplier & equipment comparison pages' },
+    ];
+
+    // supplier quote form
+    const num = (v) => { const n = parseFloat(String(v).replace(/[^0-9.]/g, '')); return isNaN(n) ? 0 : n; };
+    const l1 = num(S.p1) * 4000, l2 = num(S.p2) * 8000;
+    const fmtK = (n) => n >= 1e6 ? '$' + (n / 1e6).toFixed(2) + 'M' : '$' + Math.round(n).toLocaleString('en-US');
+    const q2215Total = fmtK(l1 + l2);
+
+    const activePos = pos.filter(p => stIdx(p.id) < 5).length;
+
+    // hash-chained event log (#8): each event carries a hash of (prev hash + payload)
+    let prevHash = 'genesis';
+    const hashedEvents = S.events.map(e => {
+      let h = 0;
+      const str = prevHash + e.ts + e.type + e.entity + e.note;
+      for (let i = 0; i < str.length; i++) h = ((h * 31) + str.charCodeAt(i)) >>> 0;
+      const hex = ('00000' + h.toString(16)).slice(-6);
+      prevHash = hex;
+      return { ...e, hash: '#' + hex };
+    });
+
+    // obligations (#9): the alerts panel lists what awaits YOU, not raw events
+    const obligations = [];
+    if (role !== 'supplier') {
+      if (!S.awarded) obligations.push({ ts: 'DUE 11 JUL', type: 'evaluate', entity: 'RFQ-2214', note: '3 quotes awaiting evaluation — jack-up campaign closes in 7 days' });
+      if (apCount > 0) obligations.push({ ts: 'NOW', type: 'approve', entity: 'APPROVALS', note: apCount + ' decision' + (apCount > 1 ? 's' : '') + ' awaiting sign-off — approver A. Bello (> $250k threshold)' });
+      obligations.push({ ts: '18 JUL', type: 'closing', entity: 'RFQ-2215', note: 'FR coveralls RFQ closes in 14 days — ' + (S.quoted2215 ? '3' : '2') + ' of 3 quotes in' });
+    } else {
+      if (!S.quoted2215) obligations.push({ ts: 'DUE 18 JUL', type: 'quote.due', entity: 'RFQ-2215', note: 'Invitation awaiting your quote — FR coveralls resupply, 2 line items' });
+      S.customRfqs.filter(r => r.invitedDW).forEach(r => obligations.push({ ts: 'NEW', type: 'invitation', entity: r.id, note: r.title + ' — submit your quote' }));
+    }
+
+    return {
+      // chrome
+      tickerOn: this.props.showTicker ?? true,
+      avatar: role === 'buyer' ? 'JO' : role === 'supplier' ? 'DA' : 'AD',
+      navHeading: role === 'buyer' ? 'BUYER · PROCUREMENT' : role === 'supplier' ? 'SUPPLIER PORTAL' : 'PLATFORM ADMIN',
+      adminBtnSt: { border: 'none', borderRadius: 6, padding: '6px 12px', fontSize: 11.5, fontWeight: 700, fontFamily: 'Archivo', cursor: 'pointer', background: role === 'admin' ? amber : 'transparent', color: role === 'admin' ? navy : 'rgba(255,255,255,.7)' },
+      toAdmin: () => this.setState({ role: 'admin', route: 'adash' }),
+      buyerBtnSt: { border: 'none', borderRadius: 6, padding: '6px 12px', fontSize: 11.5, fontWeight: 700, fontFamily: 'Archivo', cursor: 'pointer', background: role === 'buyer' ? amber : 'transparent', color: role === 'buyer' ? navy : 'rgba(255,255,255,.7)' },
+      supBtnSt: { border: 'none', borderRadius: 6, padding: '6px 12px', fontSize: 11.5, fontWeight: 700, fontFamily: 'Archivo', cursor: 'pointer', background: role === 'supplier' ? amber : 'transparent', color: role === 'supplier' ? navy : 'rgba(255,255,255,.7)' },
+      toBuyer: () => this.setState({ role: 'buyer', route: 'dash' }),
+      toSupplier: () => this.setState({ role: 'supplier', route: 'inbox' }),
+      navItems: items,
+      // routes
+      isDash: role === 'buyer' && route === 'dash', isRfqs: role === 'buyer' && route === 'rfqs',
+      isRfqDetail: role === 'buyer' && route === 'rfqDetail', isPos: role === 'buyer' && route === 'pos',
+      isCreate: role === 'buyer' && route === 'create',
+      isApprovals: role === 'buyer' && route === 'approvals',
+      approvalRows, hasApprovals: approvalRows.length > 0, noApprovals: approvalRows.length === 0,
+      apDecided: [...S.apDecided].reverse(), hasDecided: S.apDecided.length > 0,
+      isPoDetail: role === 'buyer' && route === 'poDetail', isIntel: role === 'buyer' && route === 'intel',
+      isSeo: role === 'buyer' && route === 'seo', isEvents: role !== 'supplier' && route === 'events',
+      isMsgs: role !== 'admin' && route === 'messages',
+      isAdash: role === 'admin' && route === 'adash', isVerify: role === 'admin' && route === 'verify',
+      isDisputes: role === 'admin' && route === 'disputes',
+      isInbox: role === 'supplier' && route === 'inbox', isSubmit: role === 'supplier' && route === 'submit',
+      isHistory: role === 'supplier' && route === 'history',
+      goRfqs: () => this.nav('rfqs'), goPos: () => this.nav('pos'), goEvents: () => this.nav('events'),
+      goInbox: () => this.nav('inbox'), goSubmit: () => this.nav('submit'),
+      // dashboard
+      kpiOpenRfqs: '2', kpiRfqNote: S.awarded ? 'RFQ-2214 awarded → PO-0093' : 'RFQ-2214 in evaluation',
+      kpiQuotes: S.awarded ? '0' : '3', kpiActivePos: String(activePos),
+      kpiPoNote: S.awarded ? 'PO-0093 issued to Deepwater' : '1 at GRN/inspection stage',
+      kpiSpend: S.awarded ? '$15.9M' : '$8.3M',
+      pos, recentEvents: [...S.events].slice(-5).reverse(),
+      // rfq create
+      goCreate: () => this.nav('create'), nextRfqId,
+      cTitle: S.cTitle, onCTitle: (e) => this.setState({ cTitle: e.target.value }),
+      cCloses: S.cCloses, onCCloses: (e) => this.setState({ cCloses: e.target.value }),
+      cRows, addItem: () => this.setState(s => ({ cItems: [...s.cItems, { name: '', qty: '' }] })),
+      cSups, publishNote,
+      publishSt: { background: canPublish ? '#F5A623' : '#EDEBE2', border: 'none', color: canPublish ? '#123626' : '#9CA3AF', fontWeight: 800, fontSize: 13, padding: '11px 20px', borderRadius: 8, cursor: canPublish ? 'pointer' : 'default', fontFamily: 'Archivo' },
+      publishRfq: () => {
+        if (!canPublish) return;
+        const id = nextRfqId, title = this.state.cTitle.trim();
+        const invited = Object.keys(this.state.cInvited).filter(k => this.state.cInvited[k]);
+        this.setState(s => ({
+          customRfqs: [{ id, title, status: 'OPEN', items: String(validItems.length), quotes: '0', closes: s.cCloses, meta: validItems.length + ' LINE ITEMS · CLOSES ' + s.cCloses, invitedDW: s.cInvited['Deepwater Assets Ltd'] }, ...s.customRfqs],
+          nextRfqNum: s.nextRfqNum + 1, route: 'rfqs',
+          cTitle: '', cItems: [{ name: '', qty: '' }, { name: '', qty: '' }],
+        }));
+        this.addEvent('rfq.created', id, title + ' — ' + validItems.length + ' line item(s)');
+        this.addEvent('rfq.published', id, invited.length + ' supplier(s) notified: ' + invited.join(', ') + ' · weights locked at publish (preset: General supply 40/30/30)');
+      },
+      inboxCustom: S.customRfqs.filter(r => r.invitedDW),
+      // rfq
+      rfqList, rfq2214Status, rfq2214StatusSt, compareRows, evalCards, newPoId: 'PO-0093',
+      awardDeepwater: () => {
+        if (this.state.awarded || this.state.awardRequested) return;
+        this.setState({ awardRequested: true, route: 'approvals' });
+        this.addEvent('approval.requested', 'RFQ-2214', 'Award $7.60M > $250k threshold — routed to A. Bello (requester J. Okafor cannot self-approve)');
+      },
+      // notifications
+      notifOpen: S.notifOpen,
+      toggleNotif: () => this.setState(s => ({ notifOpen: !s.notifOpen })),
+      notifCount: String(obligations.length),
+      notifBadgeSt: { fontFamily: mono, fontSize: 10, fontWeight: 700, color: navy, background: amber, borderRadius: 99, padding: '1px 7px', display: obligations.length > 0 ? 'inline' : 'none' },
+      notifItems: obligations,
+      openEventLog: () => this.setState(s => ({ notifOpen: false, route: 'events', role: s.role === 'supplier' ? 'buyer' : (s.role ?? 'buyer') })),
+      // messages
+      msgDraft: S.msgDraft, onMsgDraft: (e) => this.setState({ msgDraft: e.target.value }),
+      msgRows: S.msgs.map(m => {
+        const mine = m.from === role;
+        return {
+          text: m.text, ts: m.ts, who: m.from === 'buyer' ? 'Sahara E&P' : 'Deepwater',
+          rowSt: { display: 'flex', justifyContent: mine ? 'flex-end' : 'flex-start' },
+          bubbleSt: { maxWidth: '72%', background: mine ? navy : '#F1EFE8', color: mine ? '#fff' : '#123626', borderRadius: 12, padding: '10px 14px', display: 'flex', flexDirection: 'column', gap: 4 },
+          metaSt: { fontFamily: mono, fontSize: 9.5, color: mine ? 'rgba(255,255,255,.5)' : '#9CA3AF' },
+        };
+      }),
+      sendMsg: () => {
+        const t = this.state.msgDraft.trim();
+        if (!t) return;
+        const from = (this.state.role ?? 'buyer') === 'supplier' ? 'supplier' : 'buyer';
+        this.setState(s => ({ msgs: [...s.msgs, { from, text: t, ts: this.now() }], msgDraft: '' }));
+        this.addEvent('message.sent', 'RFQ-2214', (from === 'buyer' ? 'Sahara E&P' : 'Deepwater') + ': "' + (t.length > 60 ? t.slice(0, 57) + '…' : t) + '"');
+      },
+      // disputes
+      poDisputed: S.disputes.some(d => d.po === poDet.id && d.stage < 2),
+      poDisputeId: (S.disputes.find(d => d.po === poDet.id) || {}).id || '',
+      poDisputeStage: ['open, awaiting mediator', 'in mediation', 'resolved'][(S.disputes.find(d => d.po === poDet.id) || {}).stage || 0],
+      canDispute: role === 'buyer' && curStage >= 2 && curStage < 5 && !S.disputes.some(d => d.po === poDet.id),
+      raiseDispute: () => {
+        const id = 'DSP-0' + (this.state.disputes.length + 1), po = poDet.id;
+        this.setState(s => ({ disputes: [...s.disputes, { id, po, stage: 0, reason: 'Delivery condition variance vs. inspection report' }] }));
+        this.addEvent('dispute.opened', po, id + ' — condition variance · escrow releases frozen');
+      },
+      noDisputes: S.disputes.length === 0,
+      disputeRows: S.disputes.map((d, i) => {
+        const stages = ['OPEN', 'MEDIATION', 'RESOLVED'];
+        const notes = [
+          'Buyer evidence attached (GRN photos, inspection report). Supplier has 72h to respond before mediation is assigned.',
+          'OilfieldHub mediator assigned. Both parties submitted statements; joint re-inspection scheduled. Escrow remains frozen.',
+          'Resolved: 4% price adjustment agreed, escrow released per revised schedule. Outcome recorded on both parties\' SourceOS scores.',
+        ];
+        return {
+          id: d.id, po: d.po, reason: d.reason, stageLabel: stages[d.stage], note: notes[d.stage],
+          pillSt: { fontFamily: mono, fontSize: 10.5, fontWeight: 700, padding: '3px 10px', borderRadius: 99, background: d.stage === 2 ? '#E8F8EE' : '#FDECEC', color: d.stage === 2 ? '#00692B' : '#8E2323' },
+          canAdvance: d.stage < 2, advanceLabel: d.stage === 0 ? 'Assign mediator →' : 'Record resolution →',
+          advance: () => {
+            this.setState(s => ({ disputes: s.disputes.map((x, j) => j === i ? { ...x, stage: x.stage + 1 } : x) }));
+            this.addEvent(d.stage === 0 ? 'dispute.mediation' : 'dispute.resolved', d.po, d.id + (d.stage === 0 ? ' — mediator assigned' : ' — resolved, escrow schedule revised'));
+          },
+        };
+      }),
+      // admin
+      admVerified: String(640 + S.verifQueue.filter(v => v.status === 'verified').length),
+      admPending: String(pendingVerif), admDisputes: String(openDisputes),
+      admDisputeColor: openDisputes > 0 ? '#C62828' : '#123626',
+      verifRows: S.verifQueue.map((v, i) => ({
+        name: v.name, region: v.region.toUpperCase(), docs: v.docs,
+        pending: v.status === 'pending', decided: v.status !== 'pending',
+        pill: v.status === 'verified' ? '✓ VERIFIED' : '✕ REJECTED',
+        pillSt: { fontFamily: mono, fontSize: 10.5, fontWeight: 700, padding: '4px 12px', borderRadius: 99, background: v.status === 'verified' ? '#E8F8EE' : '#FDECEC', color: v.status === 'verified' ? '#00692B' : '#8E2323' },
+        approve: () => { this.setState(s => ({ verifQueue: s.verifQueue.map((x, j) => j === i ? { ...x, status: 'verified' } : x) })); this.addEvent('supplier.verified', 'ORG', v.name + ' — KYB approved, listings enabled'); },
+        reject: () => { this.setState(s => ({ verifQueue: s.verifQueue.map((x, j) => j === i ? { ...x, status: 'rejected' } : x) })); this.addEvent('supplier.rejected', 'ORG', v.name + ' — documentation insufficient'); },
+      })),
+      // po detail — GRN / inspection / 3-way match
+      hasGrn: curStage >= 2, hasInsp: curStage >= 3, hasMatch: curStage >= 4, isPaid: curStage >= 5,
+      grnId: 'GRN-' + poDet.id.slice(3), inspId: 'INS-' + poDet.id.slice(3), invId: 'INV-' + poDet.id.slice(3),
+      grnMeta: 'RECEIVED ONNE YARD · SIGNED E. NWOSU · ' + (curStage >= 2 ? '03 JUL 11:47' : ''),
+      matchRows: poDet.items.map(it => ({ name: it.name, amt: it.amt })),
+      matchPill: curStage >= 5 ? '✓ MATCHED — PAID' : '✓ MATCHED — PAYMENT SCHEDULED',
+      matchPillSt: { marginLeft: 'auto', background: '#E8F8EE', color: '#00692B', fontSize: 10.5, fontWeight: 700, padding: '3px 10px', borderRadius: 99 },
+      // po detail
+      poDetId: poDet.id, poDetTitle: poDet.title, poDetValue: poDet.value, poDetSup: poDet.sup, poDetItems: poDet.items,
+      poStages, poStageNote: stageNotes[curStage], poCanAdvance: curStage < 5 && !poExc,
+      // lifecycle exceptions (#4) + escrow funding (#5)
+      escrowNote: curStage === 0 ? '🛡 Escrow: NOT FUNDED — supplier acknowledgement is gated on the escrow.funded event' : '🛡 Escrow funded ✓ — milestone funds release on inspection sign-off · immutable audit trail in Event Log',
+      poHasException: !!poExc, poExceptionText: poExc ? poExc.text : '',
+      poCanFail: role === 'buyer' && !poExc && (curStage === 2 || curStage === 3),
+      failLabel: curStage === 2 ? '⚠ Record partial GRN (demo)' : '⚠ Fail inspection (demo)',
+      failStage: () => {
+        const id = poDet.id, st = this.state.poStages[id] ?? 0;
+        if (this.state.poExceptions[id] || (st !== 2 && st !== 3)) return;
+        const type = st === 2 ? 'grn.partial' : 'inspection.failed';
+        const text = st === 2
+          ? 'Partial receipt recorded — 5 of 6 units at Onne. Lifecycle held at GRN until balance delivered or dispute raised; escrow unaffected for received lines.'
+          : 'Inspection failed — condition variance on line 1. Re-delivery requested; lifecycle held, escrow untouched.';
+        this.setState(s => ({ poExceptions: { ...s.poExceptions, [id]: { stage: st, text } } }));
+        this.addEvent(type, id, text);
+      },
+      resolveException: () => {
+        const id = poDet.id;
+        if (!this.state.poExceptions[id]) return;
+        this.setState(s => { const p = { ...s.poExceptions }; delete p[id]; return { poExceptions: p }; });
+        this.addEvent('exception.resolved', id, 'Exception cleared — re-delivery accepted, lifecycle resumed');
+      },
+      advanceLabel: curStage < 5 ? 'Advance → ' + stageNames[curStage + 1] + ' (demo)' : '',
+      advancePo: () => {
+        const id = this.state.poSel, i = this.state.poStages[id] ?? 0;
+        if (i >= 5 || this.state.poExceptions[id]) return;
+        this.setState(s => ({ poStages: { ...s.poStages, [id]: i + 1 } }));
+        if (i === 0) this.addEvent('escrow.funded', id, 'Escrow funded — acknowledgement precondition met');
+        const evTypes = ['po.acknowledged', 'grn.received', 'inspection.passed', 'invoice.matched', 'payment.released'];
+        this.addEvent(evTypes[i], id, stageNames[i + 1] + ' — recorded by lifecycle engine');
+      },
+      // intel / seo / events
+      supplierRows, anomalyThreshold: String(thr), seoFamilies,
+      events: [...hashedEvents].reverse(), eventCount: String(S.events.length),
+      // supplier form
+      p1: S.p1, p2: S.p2,
+      onP1: (e) => this.setState({ p1: e.target.value }), onP2: (e) => this.setState({ p2: e.target.value }),
+      line1Total: fmtK(l1), line2Total: fmtK(l2), formTotal: q2215Total, q2215Total,
+      notQuoted2215: !S.quoted2215, quoted2215: S.quoted2215,
+      submitQuote: () => {
+        if (this.state.quoted2215) return;
+        this.setState({ quoted2215: true });
+        this.addEvent('quote.submitted', 'RFQ-2215', 'Deepwater Assets Ltd — ' + q2215Total + ' (2 line items)');
+      },
+    };
+  }
+}
+</script>
+</body>
+</html>
