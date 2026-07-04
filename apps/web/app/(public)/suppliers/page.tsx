@@ -56,9 +56,11 @@ export default async function SuppliersIndexPage() {
             <div className="mb-3 flex items-start justify-between gap-3">
               <div>
                 <h2 className="font-bold text-ink group-hover:text-brand-dark">{s.displayName}</h2>
-                <div className="mt-1.5">
-                  <VerifiedBadge />
-                </div>
+                {s.kybVerified && (
+                  <div className="mt-1.5">
+                    <VerifiedBadge />
+                  </div>
+                )}
               </div>
               <ScoreBadge score={s.score} />
             </div>

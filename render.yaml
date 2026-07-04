@@ -43,3 +43,8 @@ services:
         value: 8h
       - key: WEB_ORIGIN
         value: https://oilfieldhub.netlify.app
+      # Same key as Netlify's TWELVE_DATA_API_KEY — used here for informational
+      # commodity-trend context on RIG_CHARTER evaluations. sync:false so the
+      # actual value is set once in Render's dashboard, never committed here.
+      - key: TWELVE_DATA_API_KEY
+        sync: false

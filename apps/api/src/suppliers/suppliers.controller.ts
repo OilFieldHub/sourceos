@@ -34,4 +34,11 @@ export class SuppliersController {
   getOwnHistory(@CurrentUser() user: AuthenticatedUser) {
     return this.suppliersService.getHistory(user.organizationId);
   }
+
+  /** Cross-buyer network-effect signal — visible to buyers and suppliers alike, not org-scoped. */
+  @Get('category-demand')
+  @Roles(UserRole.BUYER_ADMIN, UserRole.BUYER_USER, UserRole.SUPPLIER_USER)
+  getCategoryDemand() {
+    return this.suppliersService.getCategoryDemand();
+  }
 }

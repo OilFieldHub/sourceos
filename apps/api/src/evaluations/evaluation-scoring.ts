@@ -34,6 +34,8 @@ export interface LineAnomaly {
   medianUnitPrice: number;
   deviationPct: number; // signed — e.g. -0.47 = 47% below median
   quoteCount: number;
+  /** 'rfq' = compared against this RFQ's own quotes; 'platform-index' = the cross-RFQ price-index fallback (see PriceIndexService). */
+  source: 'rfq' | 'platform-index';
 }
 
 /**
@@ -41,10 +43,10 @@ export interface LineAnomaly {
  * outliers against the line-item median across all quotes submitted for
  * this RFQ. Requires >=3 quotes for a given line before flagging — with 1-2
  * data points "median" is degenerate and any difference looks like an
- * outlier. The README's fallback ("category price index when n<5") isn't
- * implemented: no category price index exists in the schema yet, so below
- * the threshold we just skip the check for that line rather than fabricate
- * a benchmark.
+ * outlier. Lines below that threshold are picked up by
+ * `PriceIndexService`'s platform-wide fallback instead (see
+ * EvaluationsService.evaluate) — the README's "category price index when
+ * n<5" fallback.
  */
 export function detectLineAnomalies(
   quotationLines: Array<{ quotationId: string; rfqItemId: string; unitPrice: number }>,
@@ -69,7 +71,14 @@ export function detectLineAnomalies(
       const deviationPct = (line.unitPrice - med) / med;
       if (Math.abs(deviationPct) >= ANOMALY_THRESHOLD) {
         const list = anomaliesByQuotation.get(line.quotationId) ?? [];
-        list.push({ rfqItemId, unitPrice: line.unitPrice, medianUnitPrice: med, deviationPct, quoteCount: lines.length });
+        list.push({
+          rfqItemId,
+          unitPrice: line.unitPrice,
+          medianUnitPrice: med,
+          deviationPct,
+          quoteCount: lines.length,
+          source: 'rfq',
+        });
         anomaliesByQuotation.set(line.quotationId, list);
       }
     }

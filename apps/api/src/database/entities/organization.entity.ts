@@ -37,6 +37,16 @@ export class Organization extends BaseEntity {
   @Column({ type: 'varchar', length: 255, nullable: true })
   country!: string | null;
 
+  /**
+   * Per-organization override for the segregation-of-duties PO approval
+   * gate (amendment #6) — null means "use the platform default ($250k, see
+   * purchase-orders.service.ts's DEFAULT_APPROVAL_THRESHOLD)". Some buyers
+   * need approval at $50k, others never need it at all; hardcoding one
+   * number for every organization was never realistic.
+   */
+  @Column({ type: 'integer', nullable: true })
+  approvalThreshold!: number | null;
+
   @CreateDateColumn({ type: timestampType })
   createdAt!: Date;
 

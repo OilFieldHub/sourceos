@@ -59,12 +59,14 @@ export default async function SupplierDetailPage({ params }: Params) {
       </Link>
 
       <div className="mb-8 overflow-hidden rounded-2xl bg-gradient-to-br from-brand-deep to-brand px-8 py-8">
-        <div className="mb-3">
-          <VerifiedBadge />
-        </div>
+        {supplier.kybVerified && (
+          <div className="mb-3">
+            <VerifiedBadge />
+          </div>
+        )}
         <h1 className="text-2xl font-extrabold text-white">{supplier.displayName}</h1>
         <p className="mt-1 font-mono text-[11px] uppercase tracking-wide text-white/60">
-          <SourceOSMark /> verified profile
+          <SourceOSMark /> {supplier.kybVerified ? "verified profile" : "profile"}
         </p>
       </div>
 

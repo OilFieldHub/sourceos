@@ -1,4 +1,5 @@
 import { MARKET_SYMBOLS, type MarketQuote } from "@/lib/market-config";
+import { clientIp, isRateLimited } from "@/lib/rate-limit";
 
 interface TwelveDataQuote {
   symbol?: string;
@@ -7,7 +8,11 @@ interface TwelveDataQuote {
   code?: number;
 }
 
-export async function GET() {
+export async function GET(request: Request) {
+  if (isRateLimited(clientIp(request))) {
+    return Response.json({ configured: true, error: true, quotes: [] }, { status: 429 });
+  }
+
   const apiKey = process.env.TWELVE_DATA_API_KEY;
   if (!apiKey) {
     return Response.json({ configured: false, quotes: [] });

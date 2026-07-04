@@ -2,7 +2,7 @@ import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { In, Repository } from 'typeorm';
 import { slugify } from '../common/slug';
-import { PoStage, RfqCategoryPreset } from '../database/entities/enums';
+import { KybStatus, PoStage, RfqCategoryPreset } from '../database/entities/enums';
 import { PurchaseOrder } from '../database/entities/purchase-order.entity';
 import { Rfq } from '../database/entities/rfq.entity';
 import { Supplier } from '../database/entities/supplier.entity';
@@ -20,6 +20,8 @@ export interface PublicSupplierSummary {
   onTimeRate: string | null;
   completedContracts: number;
   certifications: string[];
+  /** Real KYB verification status (Organization.kybStatus === VERIFIED) — not just "has a score." */
+  kybVerified: boolean;
 }
 
 export interface PublicCategorySummary {
@@ -86,7 +88,11 @@ export class PublicService {
   }
 
   private publishedSuppliers(): Promise<Supplier[]> {
-    return this.suppliersRepository.find({ where: { seoPublished: true }, order: { displayName: 'ASC' } });
+    return this.suppliersRepository.find({
+      where: { seoPublished: true },
+      relations: ['organization'],
+      order: { displayName: 'ASC' },
+    });
   }
 
   private async suppliersForCategory(preset: RfqCategoryPreset): Promise<Supplier[]> {
@@ -124,6 +130,7 @@ export class PublicService {
       onTimeRate: s.onTimeRate,
       completedContracts: s.completedContracts,
       certifications: s.certifications,
+      kybVerified: s.organization?.kybStatus === KybStatus.VERIFIED,
     };
   }
 }

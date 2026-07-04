@@ -9,11 +9,12 @@ import { PurchaseOrder } from '../database/entities/purchase-order.entity';
 import { Quotation } from '../database/entities/quotation.entity';
 import { Rfq } from '../database/entities/rfq.entity';
 import { EventsService } from '../events/events.service';
+import { OrganizationsService } from '../organizations/organizations.service';
 import { SuppliersService } from '../suppliers/suppliers.service';
 import { AwardDto } from './dto/award.dto';
 
-/** Segregation-of-duties threshold (amendment #6). */
-const APPROVAL_THRESHOLD = 250_000;
+/** Segregation-of-duties threshold (amendment #6) — platform default, overridable per-org via Organization.approvalThreshold. */
+const DEFAULT_APPROVAL_THRESHOLD = 250_000;
 
 @Injectable()
 export class PurchaseOrdersService {
@@ -28,6 +29,7 @@ export class PurchaseOrdersService {
     private readonly purchaseOrdersRepository: Repository<PurchaseOrder>,
     private readonly suppliersService: SuppliersService,
     private readonly eventsService: EventsService,
+    private readonly organizationsService: OrganizationsService,
     @InjectDataSource() private readonly dataSource: DataSource,
   ) {}
 
@@ -52,8 +54,10 @@ export class PurchaseOrdersService {
       throw new NotFoundException('Quotation not found');
     }
 
+    const buyerOrg = await this.organizationsService.findById(rfq.organizationId);
+    const approvalThreshold = buyerOrg.approvalThreshold ?? DEFAULT_APPROVAL_THRESHOLD;
     const totalValue = parseFloat(quotation.totalAmount);
-    const requiresApproval = totalValue > APPROVAL_THRESHOLD;
+    const requiresApproval = totalValue > approvalThreshold;
 
     const po = await this.dataSource.transaction(async (manager) => {
       const poRepo = manager.getRepository(PurchaseOrder);
@@ -108,7 +112,7 @@ export class PurchaseOrdersService {
         entityType: 'PurchaseOrder',
         entityId: po.id,
         actorId: user.userId,
-        note: `${po.poNumber} exceeds $250,000 — segregation-of-duties approval required (amendment #6, approver must differ from requester ${user.userId})`,
+        note: `${po.poNumber} exceeds $${approvalThreshold.toLocaleString()} — segregation-of-duties approval required (amendment #6, approver must differ from requester ${user.userId})`,
       });
     }
 

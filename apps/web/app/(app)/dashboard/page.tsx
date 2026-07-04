@@ -7,6 +7,7 @@ import { KpiCard } from "@/components/kpi-card";
 import { StatusPill } from "@/components/status-pill";
 import { MarketPulse } from "@/components/market-pulse";
 import { IndustryNews } from "@/components/industry-news";
+import { CategoryDemandWidget } from "@/components/category-demand";
 import { formatMoneyCompact, formatRelative } from "@/lib/format";
 import { poStageTone } from "@/lib/status";
 import { useAuth } from "@/lib/auth-context";
@@ -122,6 +123,9 @@ function BuyerDashboard() {
         <MarketPulse />
         <IndustryNews />
       </div>
+      <div className="mt-4">
+        <CategoryDemandWidget />
+      </div>
     </div>
   );
 }
@@ -177,6 +181,9 @@ function SupplierDashboard() {
       <div className="mt-4 grid grid-cols-1 gap-4 lg:grid-cols-2">
         <MarketPulse />
         <IndustryNews />
+      </div>
+      <div className="mt-4">
+        <CategoryDemandWidget />
       </div>
     </div>
   );

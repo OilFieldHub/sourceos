@@ -2,18 +2,24 @@ import { BadRequestException, Injectable, NotFoundException } from '@nestjs/comm
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { AuthenticatedUser } from '../auth/types';
-import { RfqStatus } from '../database/entities/enums';
+import { RfqCategoryPreset, RfqStatus } from '../database/entities/enums';
 import { Evaluation } from '../database/entities/evaluation.entity';
 import { Quotation } from '../database/entities/quotation.entity';
 import { Rfq } from '../database/entities/rfq.entity';
+import { RfqItem } from '../database/entities/rfq-item.entity';
 import { EventsService } from '../events/events.service';
 import {
+  ANOMALY_THRESHOLD,
+  MIN_QUOTES_FOR_ANOMALY_CHECK,
+  LineAnomaly,
   computePriceScore,
   computeReliabilityScore,
   computeRiskScore,
   detectLineAnomalies,
   round2,
 } from './evaluation-scoring';
+import { CommodityContextService } from './commodity-context.service';
+import { PriceIndexService } from './price-index.service';
 
 @Injectable()
 export class EvaluationsService {
@@ -25,10 +31,12 @@ export class EvaluationsService {
     @InjectRepository(Evaluation)
     private readonly evaluationsRepository: Repository<Evaluation>,
     private readonly eventsService: EventsService,
+    private readonly priceIndexService: PriceIndexService,
+    private readonly commodityContextService: CommodityContextService,
   ) {}
 
   async evaluate(user: AuthenticatedUser, rfqId: string): Promise<Evaluation[]> {
-    const rfq = await this.rfqsRepository.findOne({ where: { id: rfqId } });
+    const rfq = await this.rfqsRepository.findOne({ where: { id: rfqId }, relations: ['items'] });
     if (!rfq || rfq.organizationId !== user.organizationId) {
       throw new NotFoundException('RFQ not found');
     }
@@ -56,7 +64,12 @@ export class EvaluationsService {
       })),
     );
     const anomaliesByQuotation = detectLineAnomalies(allLines);
+    await this.applyPriceIndexFallback(rfq.items, allLines, anomaliesByQuotation);
     const bestTotal = Math.min(...quotations.map((q) => parseFloat(q.totalAmount)));
+
+    // Informational-only context, RIG_CHARTER only (see CommodityContextService) — not folded into any score.
+    const commodityNote =
+      rfq.categoryPreset === RfqCategoryPreset.RIG_CHARTER ? await this.commodityContextService.getWtiTrendNote() : null;
 
     const scored = quotations.map((q) => {
       const totalAmount = parseFloat(q.totalAmount);
@@ -84,12 +97,21 @@ export class EvaluationsService {
       let anomalyDetail: string | null = null;
       if (anomalies.length > 0) {
         anomalyDetail = anomalies
-          .map(
-            (a) =>
-              `line priced ${Math.abs(round2(a.deviationPct * 100))}% ${a.deviationPct < 0 ? 'below' : 'above'} the $${a.medianUnitPrice.toLocaleString()} median across ${a.quoteCount} quotes for this RFQ line`,
-          )
+          .map((a) => {
+            const direction = a.deviationPct < 0 ? 'below' : 'above';
+            const magnitude = Math.abs(round2(a.deviationPct * 100));
+            const basis =
+              a.source === 'platform-index'
+                ? `the platform-wide price index ($${a.medianUnitPrice.toLocaleString()} median across ${a.quoteCount} historical quotes for this line item — too few quotes on this RFQ alone to compare)`
+                : `the $${a.medianUnitPrice.toLocaleString()} median across ${a.quoteCount} quotes for this RFQ line`;
+            return `line priced ${magnitude}% ${direction} ${basis}`;
+          })
           .join('; ');
         reasons.push(`⚠ Anomalous pricing detected — risk score reduced (${anomalyDetail})`);
+      }
+
+      if (commodityNote) {
+        reasons.push(commodityNote);
       }
 
       return {
@@ -141,6 +163,54 @@ export class EvaluationsService {
     });
 
     return this.evaluationsRepository.find({ where: { rfqId }, order: { rank: 'ASC' } });
+  }
+
+  /**
+   * README's "category price index when n<5" fallback: for any RFQ line
+   * with too few same-RFQ quotes for `detectLineAnomalies` to have checked
+   * it, look up the platform-wide price index instead (PriceIndexService)
+   * and flag against that. Mutates `anomaliesByQuotation` in place.
+   */
+  private async applyPriceIndexFallback(
+    rfqItems: RfqItem[],
+    allLines: Array<{ quotationId: string; rfqItemId: string; unitPrice: number }>,
+    anomaliesByQuotation: Map<string, LineAnomaly[]>,
+  ): Promise<void> {
+    const lineCounts = new Map<string, number>();
+    for (const line of allLines) {
+      lineCounts.set(line.rfqItemId, (lineCounts.get(line.rfqItemId) ?? 0) + 1);
+    }
+    const itemsById = new Map(rfqItems.map((i) => [i.id, i]));
+
+    for (const [rfqItemId, count] of lineCounts) {
+      if (count >= MIN_QUOTES_FOR_ANOMALY_CHECK) {
+        continue;
+      }
+      const item = itemsById.get(rfqItemId);
+      if (!item) {
+        continue;
+      }
+      const benchmark = await this.priceIndexService.getBenchmark(item.description);
+      if (!benchmark) {
+        continue;
+      }
+      for (const line of allLines.filter((l) => l.rfqItemId === rfqItemId)) {
+        const deviationPct = (line.unitPrice - benchmark.medianUnitPrice) / benchmark.medianUnitPrice;
+        if (Math.abs(deviationPct) < ANOMALY_THRESHOLD) {
+          continue;
+        }
+        const list = anomaliesByQuotation.get(line.quotationId) ?? [];
+        list.push({
+          rfqItemId,
+          unitPrice: line.unitPrice,
+          medianUnitPrice: benchmark.medianUnitPrice,
+          deviationPct,
+          quoteCount: benchmark.sampleSize,
+          source: 'platform-index',
+        });
+        anomaliesByQuotation.set(line.quotationId, list);
+      }
+    }
   }
 
   async listForRfq(user: AuthenticatedUser, rfqId: string): Promise<Evaluation[]> {

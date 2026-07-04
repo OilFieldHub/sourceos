@@ -1,6 +1,8 @@
 import { Module } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
+import { APP_GUARD } from '@nestjs/core';
 import { EventEmitterModule } from '@nestjs/event-emitter';
+import { ThrottlerGuard, ThrottlerModule } from '@nestjs/throttler';
 import { TypeOrmModule, TypeOrmModuleOptions } from '@nestjs/typeorm';
 import { AuthModule } from './auth/auth.module';
 import { entities } from './database/entities';
@@ -18,6 +20,10 @@ import { UsersModule } from './users/users.module';
   imports: [
     ConfigModule.forRoot({ isGlobal: true }),
     EventEmitterModule.forRoot(),
+    // Global default: 60 req/min per IP. Auth endpoints override this
+    // tighter via @Throttle (see AuthController) — this is the platform's
+    // general baseline, not specifically tuned for login/register.
+    ThrottlerModule.forRoot([{ ttl: 60000, limit: 60 }]),
     TypeOrmModule.forRootAsync({
       imports: [ConfigModule],
       inject: [ConfigService],
@@ -59,5 +65,6 @@ import { UsersModule } from './users/users.module';
     PublicModule,
     DocumentsModule,
   ],
+  providers: [{ provide: APP_GUARD, useClass: ThrottlerGuard }],
 })
 export class AppModule {}

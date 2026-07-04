@@ -1,13 +1,26 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { EntityManager, In, Repository } from 'typeorm';
-import { DisputeStatus, GrnStatus, InspectionResult, PoStage, RiskLevel } from '../database/entities/enums';
+import { EntityManager, In, MoreThan, Repository } from 'typeorm';
+import { DisputeStatus, GrnStatus, InspectionResult, PoStage, RfqCategoryPreset, RiskLevel } from '../database/entities/enums';
 import { Grn } from '../database/entities/grn.entity';
 import { Inspection } from '../database/entities/inspection.entity';
 import { Invoice } from '../database/entities/invoice.entity';
 import { PurchaseOrder } from '../database/entities/purchase-order.entity';
 import { Quotation } from '../database/entities/quotation.entity';
+import { Rfq } from '../database/entities/rfq.entity';
 import { Supplier } from '../database/entities/supplier.entity';
+
+const CATEGORY_LABELS: Record<RfqCategoryPreset, string> = {
+  [RfqCategoryPreset.RIG_CHARTER]: 'Rig Charter',
+  [RfqCategoryPreset.GENERAL_SUPPLY]: 'General Supply',
+};
+
+export interface CategoryDemand {
+  preset: RfqCategoryPreset;
+  label: string;
+  rfqCount: number;
+  buyerOrgCount: number;
+}
 
 export interface CreateSupplierInput {
   organizationId: string;
@@ -119,7 +132,36 @@ export class SuppliersService {
     private readonly inspectionsRepository: Repository<Inspection>,
     @InjectRepository(Invoice)
     private readonly invoicesRepository: Repository<Invoice>,
+    @InjectRepository(Rfq)
+    private readonly rfqsRepository: Repository<Rfq>,
   ) {}
+
+  /**
+   * Cross-buyer network effect: how much recent (last 90 days) platform-
+   * wide demand exists per category, regardless of which organization is
+   * asking — visible to both buyers ("is this category active right now")
+   * and suppliers ("which categories are hot"). Not scoped to the caller's
+   * own organization on purpose.
+   */
+  async getCategoryDemand(): Promise<CategoryDemand[]> {
+    const since = new Date();
+    since.setDate(since.getDate() - 90);
+
+    const recentRfqs = await this.rfqsRepository.find({
+      where: { createdAt: MoreThan(since) },
+      select: ['organizationId', 'categoryPreset'],
+    });
+
+    return Object.values(RfqCategoryPreset).map((preset) => {
+      const matches = recentRfqs.filter((r) => r.categoryPreset === preset);
+      return {
+        preset,
+        label: CATEGORY_LABELS[preset],
+        rfqCount: matches.length,
+        buyerOrgCount: new Set(matches.map((r) => r.organizationId)).size,
+      };
+    });
+  }
 
   create(input: CreateSupplierInput, manager?: EntityManager): Promise<Supplier> {
     const repo = manager ? manager.getRepository(Supplier) : this.suppliersRepository;

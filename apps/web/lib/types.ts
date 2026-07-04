@@ -247,6 +247,8 @@ export interface PublicSupplierSummary {
   onTimeRate: string | null;
   completedContracts: number;
   certifications: string[];
+  /** Real KYB verification status — not just "has a score." */
+  kybVerified: boolean;
 }
 
 export interface PublicCategorySummary {
@@ -265,5 +267,6 @@ export interface Organization {
   name: string;
   type: OrganizationType;
   kybStatus: "PENDING" | "VERIFIED" | "REJECTED";
+  createdAt: string;
   country: string | null;
 }

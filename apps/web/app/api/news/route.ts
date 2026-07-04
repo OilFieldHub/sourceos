@@ -1,3 +1,5 @@
+import { clientIp, isRateLimited } from "@/lib/rate-limit";
+
 export interface NewsArticle {
   title: string;
   source: string;
@@ -14,7 +16,11 @@ interface NewsApiArticle {
 
 const QUERY = "(oil OR gas OR petroleum) AND (Nigeria OR Africa OR OPEC OR Seplat OR NNPC)";
 
-export async function GET() {
+export async function GET(request: Request) {
+  if (isRateLimited(clientIp(request))) {
+    return Response.json({ configured: true, error: true, articles: [] }, { status: 429 });
+  }
+
   const apiKey = process.env.NEWSAPI_API_KEY;
   if (!apiKey) {
     return Response.json({ configured: false, articles: [] });

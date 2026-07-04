@@ -25,6 +25,7 @@ const SUPPLIER_ITEMS: NavItem[] = [
 ];
 
 const ADMIN_ITEMS: NavItem[] = [
+  { href: "/admin/verification", label: "Verification queue" },
   { href: "/pos", label: "Purchase orders" },
   { href: "/events", label: "Event log" },
 ];

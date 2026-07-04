@@ -9,6 +9,7 @@ import { PurchaseOrder } from '../database/entities/purchase-order.entity';
 import { Quotation } from '../database/entities/quotation.entity';
 import { Rfq } from '../database/entities/rfq.entity';
 import { EventsModule } from '../events/events.module';
+import { OrganizationsModule } from '../organizations/organizations.module';
 import { SuppliersModule } from '../suppliers/suppliers.module';
 import { PurchaseOrderLifecycleController } from './purchase-order-lifecycle.controller';
 import { PurchaseOrderLifecycleService } from './purchase-order-lifecycle.service';
@@ -20,6 +21,7 @@ import { PurchaseOrdersService } from './purchase-orders.service';
     TypeOrmModule.forFeature([Rfq, Evaluation, Quotation, PurchaseOrder, Grn, Inspection, Invoice, Payment]),
     SuppliersModule,
     EventsModule,
+    OrganizationsModule,
   ],
   controllers: [RfqAwardController, PurchaseOrdersController, PurchaseOrderLifecycleController],
   providers: [PurchaseOrdersService, PurchaseOrderLifecycleService],
